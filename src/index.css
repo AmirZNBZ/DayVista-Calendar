@@ -1,1 +1,17 @@
 @import "tailwindcss";
+
+@layer utilities {
+  .pointer {
+    @apply cursor-pointer;
+  }
+}
+
+table,
+th,
+td {
+  border: 1px solid #8787873a;
+  border-collapse: collapse;
+}
+td {
+  text-align: center;
+}

@@ -1,17 +1,48 @@
-import { useState } from "react";
-import { VIEW_OPTIONS } from "../constants";
-import ArrowDownIcon from "../icons/ArrowDown";
-import IconWrapper from "./IconWrapper";
-import type { VIEW_OPTIONS_TYPES } from "../types/globalTypes";
 import clsx from "clsx";
+import React, { useState } from "react";
+import { monthNames, VIEW_OPTIONS } from "../constants";
+import ArrowDownIcon from "../icons/ArrowDown";
+import FilterListIcon from "../icons/FilterList";
 import ThinArrowRightIcon from "../icons/ThinArrowRight";
+import type { VIEW_OPTIONS_TYPES } from "../types/globalTypes";
+import IconWrapper from "./IconWrapper";
 
-const Header = () => {
-  const [selectedView, setSelectedView] = useState<VIEW_OPTIONS_TYPES>(VIEW_OPTIONS[0]);
+interface HeaderProps {
+  year: number;
+  month: number;
+  yearIncrease: React.Dispatch<React.SetStateAction<number>>;
+  monthIncrease: React.Dispatch<React.SetStateAction<number>>;
+}
+
+const Header = ({ month, monthIncrease, year, yearIncrease }: HeaderProps) => {
   const [showViewOptions, setShowViewOptions] = useState<boolean>(false);
+  const [today, setToday] = useState<number>(new Date().getDate());
+  const [selectedView, setSelectedView] = useState<VIEW_OPTIONS_TYPES>(VIEW_OPTIONS[0]);
 
   const handleShowViewOptions = () => {
     setShowViewOptions((prev) => !prev);
+  };
+
+  const goToPrevMonth = () => {
+    if (month === 0) {
+      monthIncrease(11);
+      yearIncrease((prev) => prev - 1);
+      setToday(new Date(year, month - 1, 1).getDate());
+    } else {
+      monthIncrease((prev) => prev - 1);
+      setToday(new Date(year, month - 1, 1).getDate());
+    }
+  };
+
+  const goToNextMonth = () => {
+    if (month === 11) {
+      monthIncrease(0);
+      yearIncrease((prev) => prev + 1);
+      setToday(new Date(year, month - 1, 1).getDate());
+    } else {
+      monthIncrease((prev) => prev + 1);
+      setToday(new Date(year, month - 1, 1).getDate());
+    }
   };
 
   return (
@@ -19,7 +50,7 @@ const Header = () => {
       <section id="viewOptionsButton" className="relative flex justify-between items-center max-w-4/12">
         <div
           onClick={handleShowViewOptions}
-          className="inline-flex items-center min-w-1/5 py-1 px-4 rounded-md cursor-pointer min-w- hover:bg-gray-300/50 transition-colors"
+          className="inline-flex items-center min-w-1/5 py-1 px-4 rounded-md pointer min-w- hover:bg-gray-300/50 transition-colors"
         >
           <IconWrapper className="mr-1">{selectedView.icon}</IconWrapper>
           <p className="font-semibold text-lg">{selectedView.label}</p>
@@ -43,7 +74,7 @@ const Header = () => {
               }}
               className={clsx(
                 option.value === selectedView.value ? "bg-gray-300/60" : "",
-                `inline-flex items-center p-2 cursor-pointer hover:bg-gray-300/50 transition-colors my-[2px] rounded-sm`
+                `inline-flex items-center p-2 pointer hover:bg-gray-300/50 transition-colors my-[2px] rounded-sm`
               )}
             >
               {option.icon && <IconWrapper className="mr-2">{option.icon}</IconWrapper>}
@@ -55,17 +86,46 @@ const Header = () => {
 
       <section id="movementButtons" className="relative max-w-4/12">
         <div className="flex items-center">
-          <IconWrapper className="hover:bg-gray-300/30 rounded-full p-2 transform -rotate-180">
+          <IconWrapper
+            onClickFn={goToPrevMonth}
+            className="hover:bg-gray-300/30 rounded-full p-2 transform -rotate-180 pointer select-none"
+          >
             <ThinArrowRightIcon strokeWidth={2} />
           </IconWrapper>
-          <p className="font-bold tracking-wider text-xl mx-2">29 Jul 2025</p>
-          <IconWrapper className="hover:bg-gray-300/30 rounded-full p-2 transform">
+          <p className="flex gap-2 font-bold tracking-wider text-xl mx-2">
+            <span>{today < 10 ? `0${today}` : today}</span>
+            <span>{monthNames[month]}</span>
+            <span>{year}</span>
+          </p>
+          <IconWrapper
+            onClickFn={goToNextMonth}
+            className="hover:bg-gray-300/30 rounded-full p-2 transform pointer select-none"
+          >
             <ThinArrowRightIcon strokeWidth={2} />
           </IconWrapper>
         </div>
       </section>
+
       <section id="filterButtons" className="relative max-w-4/12">
-        dasdasd
+        <div className="flex items-center">
+          <button
+            type="button"
+            onClick={() => {
+              monthIncrease(new Date().getMonth());
+              yearIncrease(new Date().getFullYear());
+              setToday(new Date().getDate());
+            }}
+            className="mr-2 bg-orange-400 hover:bg-orange-500 px-4 py-1 rounded-md pointer"
+          >
+            <p className="font-semibold text-white/90 text-md">Today</p>
+          </button>
+          <IconWrapper
+            onClickFn={() => console.log("filter Icon")}
+            className="hover:bg-gray-300/30 rounded-full p-2 select-none"
+          >
+            <FilterListIcon />
+          </IconWrapper>
+        </div>
       </section>
     </div>
   );

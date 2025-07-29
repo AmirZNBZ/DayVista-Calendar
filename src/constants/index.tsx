@@ -10,3 +10,20 @@ export const VIEW_OPTIONS: VIEW_OPTIONS_TYPES[] = [
   { value: "timeGridDay", label: "Day", icon: <DayViewIcon /> },
   { value: "listWeek", label: "Agenda", icon: <AgendaViewIcon /> },
 ];
+
+export const daysOfWeek: string[] = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+export const monthNames = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
