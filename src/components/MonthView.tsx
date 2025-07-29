@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { daysOfWeek } from "../constants";
-import { useCalendarCells } from "../hooks/useCalendarCells";
+import { generateCalendarCells } from "../hooks/useCalendarCells";
 
 interface MonthViewProps {
   year: number;
@@ -8,7 +8,7 @@ interface MonthViewProps {
 }
 
 const MonthView = ({ year, month }: MonthViewProps) => {
-  const generatedDate = useCalendarCells(year, month);
+  const generatedDate = generateCalendarCells(year, month);
 
   const rows = Array.from({ length: 6 }, (_, rowIndex) =>
     generatedDate.slice(rowIndex * 7, rowIndex * 7 + 7)

@@ -5,3 +5,10 @@ export interface VIEW_OPTIONS_TYPES {
   value: string;
   icon: React.ReactNode;
 }
+
+export type CalendarCell = {
+  key: number;
+  dayNumber: number | null;
+  isCurrentMonth: boolean;
+  date: string | null;
+};
