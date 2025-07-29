@@ -1,5 +1,7 @@
+import DayVistaCalendar from "./components/day-vista-calendar";
+
 function App() {
-  return <div className="text-3xl font-bold underline">HIIIIIIIIIIII</div>;
+  return <DayVistaCalendar />;
 }
 
 export default App;
