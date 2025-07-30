@@ -9,7 +9,7 @@ const DayVistaCalendar = () => {
   return (
     <main className="container w-full mx-auto my-16 border border-gray-200 shadow-1xl p-2 rounded-md">
       <Header monthIncrease={setMonth} yearIncrease={setYear} month={month} year={year} />
-      <div className="border-b border-b-gray-300 my-1" />
+      <div className="my-4" />
       <MonthView month={month} year={year} />
     </main>
   );

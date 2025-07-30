@@ -12,3 +12,17 @@ export type CalendarCell = {
   isCurrentMonth: boolean;
   date: string | null;
 };
+
+// export type EventColor = "blue" | "green" | "red" | "yellow" | "purple" | "gray";
+
+export type CalendarEvent = {
+  id: string;
+  title: string;
+  description?: string;
+  fromDate: string; // ISO string format: YYYY-MM-DD
+  toDate: string; // ISO string format: YYYY-MM-DD
+  fromTime: string;
+  toTime: string;
+  // color: EventColor;
+  color?: string;
+};
