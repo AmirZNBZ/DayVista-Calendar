@@ -7,10 +7,10 @@ export interface VIEW_OPTIONS_TYPES {
 }
 
 export type CalendarCell = {
-  key: number;
-  dayNumber: number | null;
-  isCurrentMonth: boolean;
+  key: number | string;
   date: string | null;
+  isCurrentMonth: boolean;
+  dayNumber: number | null;
 };
 
 // export type EventColor = "blue" | "green" | "red" | "yellow" | "purple" | "gray";
@@ -18,11 +18,11 @@ export type CalendarCell = {
 export type CalendarEvent = {
   id: string;
   title: string;
-  description?: string;
-  fromDate: string; // ISO string format: YYYY-MM-DD
   toDate: string; // ISO string format: YYYY-MM-DD
-  fromTime: string;
   toTime: string;
   // color: EventColor;
   color?: string;
+  fromDate: string; // ISO string format: YYYY-MM-DD
+  fromTime: string;
+  description?: string;
 };

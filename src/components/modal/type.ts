@@ -11,8 +11,9 @@ export interface ModalContextType {
 }
 
 export interface OpenProps {
-  children: ReactElement<{ onClick?: () => void }>;
   opens: string;
+  stopClickPropagation?: boolean;
+  children: ReactElement<{ onClick?: (e: MouseEvent) => void }>;
 }
 
 export interface WindowProps {

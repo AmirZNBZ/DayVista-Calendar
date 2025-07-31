@@ -4,7 +4,8 @@ import { generateCalendarCells } from "../hooks/useCalendarCells";
 import { useEventStore } from "../store/eventStore";
 import AddEventForm from "./AddEventForm";
 import Modal from "./modal/Modal";
-import React, { useState } from "react";
+import React from "react";
+import type { CalendarEvent } from "../types/globalTypes";
 
 interface MonthViewProps {
   year: number;
@@ -12,20 +13,29 @@ interface MonthViewProps {
 }
 
 const MonthView = ({ year, month }: MonthViewProps) => {
-  const generatedDate = generateCalendarCells(year, month);
-  const [eventId, setEventId] = useState<string>("");
   const eventStore = useEventStore();
+  const generatedDate = generateCalendarCells(year, month);
 
   const rows = Array.from({ length: 6 }, (_, rowIndex) =>
     generatedDate.slice(rowIndex * 7, rowIndex * 7 + 7)
   );
+
+  const updateEvent = (event: CalendarEvent) => {
+    eventStore.updateEvent(event);
+  };
+  const addEvent = (event: CalendarEvent) => {
+    eventStore.addEvent(event);
+  };
+  const deleteEvent = (id: CalendarEvent["id"]) => {
+    eventStore.deleteEvent(id);
+  };
 
   console.log("rows", rows);
   console.log("events", eventStore.events);
 
   return (
     <Modal>
-      <table className="w-full h-full">
+      <table className="w-full h-full table-fixed">
         <thead>
           <tr>
             {daysOfWeek.map((day) => (
@@ -43,6 +53,8 @@ const MonthView = ({ year, month }: MonthViewProps) => {
                   <Modal.Open opens={key.toString()} key={key}>
                     <td
                       key={key}
+                      // thats data attr so important for using the modal
+                      data-no-outside-click
                       className={clsx(
                         "active:bg-purple-200/20 select-none min-h-20 h-20 p-1 align-top border border-orange-400"
                       )}
@@ -55,33 +67,41 @@ const MonthView = ({ year, month }: MonthViewProps) => {
                             </strong>
                           )}
                         </div>
-                        <ul className="mt-1 space-y-1 text-xs text-left">
+                        <ul onClick={(e) => e.stopPropagation()} className="mt-1 space-y-1 text-xs text-left">
                           {eventStore.events
-                            .filter((ev) => ev.fromDate === date)
-                            .map((ev) => (
-                              <li
-                                key={ev.id}
-                                onClick={() => setEventId(eventId)}
-                                className="overflow-hidden text-ellipsis whitespace-nowrap rounded px-1 text-sm text-white"
-                                style={{ backgroundColor: ev.color }}
-                              >
-                                <span className="font-bold">
-                                  {ev.fromDate}-{ev.fromTime} to {ev.toDate}-{ev.toTime}
-                                </span>
-                                - {ev.title}
-                              </li>
+                            .filter((ev: CalendarEvent) => ev.fromDate === date)
+                            .map((ev: CalendarEvent) => (
+                              <React.Fragment key={ev.id}>
+                                <Modal.Open opens={ev.id} stopClickPropagation={true}>
+                                  <li
+                                    key={ev.id}
+                                    data-no-outside-click
+                                    className="overflow-hidden text-ellipsis whitespace-nowrap rounded px-1 text-sm text-white"
+                                    style={{ backgroundColor: ev.color }}
+                                  >
+                                    <span className="font-bold">
+                                      {ev.fromDate}-{ev.fromTime} to {ev.toDate}-{ev.toTime}
+                                    </span>
+                                    - {ev.title}
+                                  </li>
+                                </Modal.Open>
+                                <Modal.Window name={ev.id}>
+                                  <AddEventForm
+                                    initialEvent={ev}
+                                    toDate={ev.toDate}
+                                    onAdd={updateEvent}
+                                    fromDate={ev.fromDate}
+                                    onDelete={deleteEvent}
+                                  />
+                                </Modal.Window>
+                              </React.Fragment>
                             ))}
                         </ul>
                       </div>
                     </td>
                   </Modal.Open>
                   <Modal.Window name={key.toString()}>
-                    <AddEventForm
-                      fromDate={date || ""}
-                      toDate={date || ""}
-                      onAdd={(event) => eventStore.addEvent(event)}
-                      onDelete={(id) => eventStore.deleteEvent(id)}
-                    />
+                    <AddEventForm fromDate={date || ""} toDate={date || ""} onAdd={addEvent} />
                   </Modal.Window>
                 </React.Fragment>
               ))}

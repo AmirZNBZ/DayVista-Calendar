@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
 import IconWrapper from "../IconWrapper";
 import ClockIcon from "../../icons/Clock";
+import { useState, useEffect } from "react";
 import { useOutsideClick } from "../../hooks/useOutSideClick";
 
 interface TimePickerProps {

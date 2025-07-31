@@ -26,6 +26,7 @@
     "prettier": "^3.6.2",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-multi-date-picker": "^4.5.2",
     "tailwindcss": "^4.1.11",
     "tslib": "^2.8.1",
     "uuid": "^11.1.0",
