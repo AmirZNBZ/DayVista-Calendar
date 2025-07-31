@@ -55,7 +55,11 @@ const Header = ({ month, monthIncrease, year, yearIncrease }: HeaderProps) => {
           <IconWrapper className="mr-1">{selectedView.icon}</IconWrapper>
           <p className="font-semibold text-lg">{selectedView.label}</p>
           <IconWrapper className="ml-2">
-            <ArrowDownIcon />
+            <ArrowDownIcon
+              className={clsx(
+                showViewOptions ? "rotate-180 transition duration-500" : "transition duration-500"
+              )}
+            />
           </IconWrapper>
         </div>
         <ul
