@@ -33,14 +33,9 @@ export default function AddEventForm({
   const calendar = calendarType === "persian" ? persian : gregorian;
   const locale = calendarType === "persian" ? persian_fa : gregorian_en;
 
-  const getInitialDate = (dateStr?: string, timeStr?: string): DateObject | null => {
-    if (dateStr && timeStr) {
-      // اگر هم تاریخ و هم زمان داشتیم (حالت ویرایش)
-      return new DateObject({ date: `${dateStr} ${timeStr}`, calendar, locale });
-    }
-    if (dateStr) {
-      // اگر فقط تاریخ داشتیم (حالت ساخت رویداد جدید)
-      return new DateObject({ date: dateStr, calendar, locale });
+  const getInitialDate = (dateString?: string): DateObject | null => {
+    if (dateString) {
+      return new DateObject({ date: dateString, calendar, locale });
     }
     return null;
   };
@@ -50,10 +45,10 @@ export default function AddEventForm({
   const [description, setDescription] = useState(initialEvent?.description || "");
 
   const [fromDateTime, setFromDateTime] = useState<DateObject | null>(
-    getInitialDate(initialEvent?.fromDate || fromDate, initialEvent?.fromTime)
+    getInitialDate(initialEvent?.start || fromDate)
   );
   const [toDateTime, setToDateTime] = useState<DateObject | null>(
-    getInitialDate(initialEvent?.toDate || toDate, initialEvent?.toTime)
+    getInitialDate(initialEvent?.end || toDate)
   );
   const handleSubmit = () => {
     if (!fromDateTime || !toDateTime) return;
@@ -64,10 +59,8 @@ export default function AddEventForm({
       description,
       id: initialEvent?.id || uuidv4(),
       // ✨ ۳. تبدیل به رشته فقط در لحظه ذخیره نهایی انجام می‌شود.
-      toTime: toDateTime.format("HH:mm"),
-      fromTime: fromDateTime.format("HH:mm"),
-      toDate: toDateTime.format("YYYY-MM-DD"),
-      fromDate: fromDateTime.format("YYYY-MM-DD"),
+      start: fromDateTime.toDate().toISOString(),
+      end: toDateTime.toDate().toISOString(),
     };
     onAdd(newEvent);
     onCloseModal?.();

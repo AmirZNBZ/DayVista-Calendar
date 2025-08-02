@@ -13,16 +13,14 @@ export type CalendarCell = {
   dayNumber: number | null;
 };
 
-// export type EventColor = "blue" | "green" | "red" | "yellow" | "purple" | "gray";
+export type EventColor = "blue" | "green" | "red" | "yellow" | "purple" | "gray";
 
 export type CalendarEvent = {
   id: string;
   title: string;
-  toDate: string; // ISO string format: YYYY-MM-DD
-  toTime: string;
   // color: EventColor;
+  end: string; //
+  start: string; // ✨ فرمت ISO: "2025-08-22T10:30:00.000Z"
   color?: string;
-  fromDate: string; // ISO string format: YYYY-MM-DD
-  fromTime: string;
   description?: string;
 };
