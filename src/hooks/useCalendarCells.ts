@@ -1,56 +1,64 @@
-import dayjs from "dayjs";
-import type { CalendarCell } from "../types/globalTypes";
+import DateObject from "react-date-object";
+import { useCalendarStore } from "../store/calendarStore";
 
-export const generateCalendarCells = (year: number, month: number): CalendarCell[] => {
+// تعریف تایپ برای هر خانه از تقویم
+interface CalendarCell {
+  key: number | string;
+  dayNumber: number;
+  isCurrentMonth: boolean;
+  date: string; // فرمت YYYY-MM-DD
+}
+
+export const useGenerateCalendarCells = (): CalendarCell[] => {
+  const { viewDate } = useCalendarStore();
   const cells: CalendarCell[] = [];
+  const totalCells = 42; // 6 هفته * 7 روز
 
-  const startOfMonth = dayjs(new Date(year, month, 1));
-  const endOfMonth = startOfMonth.endOf("month");
+  // 2. محاسبه اطلاعات اصلی ماه جاری
+  const startOfMonth = viewDate.toFirstOfMonth();
+  const daysInMonth = viewDate.month.length;
+  const startDayOfWeek = startOfMonth.weekDay.index; // 0 (Sunday) تا 6 (Saturday)
 
-  const daysInMonth = endOfMonth.date();
-  const startDayOfWeek = startOfMonth.day(); // 0 (Sunday) to 6 (Saturday)
-
-  const totalCells = 42; // 6 weeks * 7 days
-
-  let key = 0;
-
-  // Fill previous month days
+  // 3. پر کردن روزهای ماه قبل
   const prevMonth = startOfMonth.subtract(1, "month");
-  const prevMonthDays = prevMonth.daysInMonth();
+  const prevMonthDays = prevMonth.month.length;
 
-  for (let i = startDayOfWeek - 1; i >= 0; i--) {
-    const day = prevMonthDays - i;
-    const date = prevMonth.date(day).format("YYYY-MM-DD");
+  for (let i = 0; i < startDayOfWeek; i++) {
+    const dayNumber = prevMonthDays - startDayOfWeek + 1 + i;
+    const dateObj = new DateObject(prevMonth).set("day", dayNumber);
+
     cells.push({
-      key: key++,
-      dayNumber: day,
+      key: `prev-${dayNumber}`,
+      dayNumber,
       isCurrentMonth: false,
-      date,
+      date: dateObj.format("YYYY-MM-DD"),
     });
   }
 
-  // Fill current month days
-  for (let day = 1; day <= daysInMonth; day++) {
-    const date = startOfMonth.date(day).format("YYYY-MM-DD");
+  // 4. پر کردن روزهای ماه جاری
+  for (let dayNumber = 1; dayNumber <= daysInMonth; dayNumber++) {
+    const dateObj = new DateObject(startOfMonth).set("day", dayNumber);
+
     cells.push({
-      key: key++,
-      dayNumber: day,
+      key: `current-${dayNumber}`,
+      dayNumber,
       isCurrentMonth: true,
-      date,
+      date: dateObj.format("YYYY-MM-DD"),
     });
   }
 
-  // Fill next month days
-  const remaining = totalCells - cells.length;
+  // 5. پر کردن روزهای ماه بعد
+  const remainingCells = totalCells - cells.length;
   const nextMonth = startOfMonth.add(1, "month");
 
-  for (let day = 1; day <= remaining; day++) {
-    const date = nextMonth.date(day).format("YYYY-MM-DD");
+  for (let dayNumber = 1; dayNumber <= remainingCells; dayNumber++) {
+    const dateObj = new DateObject(nextMonth).set("day", dayNumber);
+
     cells.push({
-      key: key++,
-      dayNumber: day,
+      key: `next-${dayNumber}`,
+      dayNumber,
       isCurrentMonth: false,
-      date,
+      date: dateObj.format("YYYY-MM-DD"),
     });
   }
 

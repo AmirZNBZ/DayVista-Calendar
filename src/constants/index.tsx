@@ -11,7 +11,9 @@ export const VIEW_OPTIONS: VIEW_OPTIONS_TYPES[] = [
   { value: "listWeek", label: "Agenda", icon: <AgendaViewIcon /> },
 ];
 
-export const daysOfWeek: string[] = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+export const daysOfWeekEn: string[] = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+export const daysOfWeekFa: string[] = ["شنبه", "یکشنبه", "دوشنبه", "سه شنبه", "چهارشنبه", "پنجشنبه", "جمعه"];
 
 export const monthNames = [
   "Jan",

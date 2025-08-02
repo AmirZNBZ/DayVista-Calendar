@@ -1,48 +1,21 @@
 import clsx from "clsx";
 import React, { useState } from "react";
-import { monthNames, VIEW_OPTIONS } from "../constants";
+import { VIEW_OPTIONS } from "../constants";
 import ArrowDownIcon from "../icons/ArrowDown";
 import FilterListIcon from "../icons/FilterList";
 import ThinArrowRightIcon from "../icons/ThinArrowRight";
 import type { VIEW_OPTIONS_TYPES } from "../types/globalTypes";
 import IconWrapper from "./IconWrapper";
+import CalendarSwitcher from "./ClanedarSwitcher";
+import { useCalendarStore } from "../store/calendarStore";
 
-interface HeaderProps {
-  year: number;
-  month: number;
-  yearIncrease: React.Dispatch<React.SetStateAction<number>>;
-  monthIncrease: React.Dispatch<React.SetStateAction<number>>;
-}
-
-const Header = ({ month, monthIncrease, year, yearIncrease }: HeaderProps) => {
+const Header = () => {
+  const { goToToday, viewDate, calendarType, goToNextMonth, goToPrevMonth } = useCalendarStore();
   const [showViewOptions, setShowViewOptions] = useState<boolean>(false);
-  const [today, setToday] = useState<number>(new Date().getDate());
   const [selectedView, setSelectedView] = useState<VIEW_OPTIONS_TYPES>(VIEW_OPTIONS[0]);
 
   const handleShowViewOptions = () => {
     setShowViewOptions((prev) => !prev);
-  };
-
-  const goToPrevMonth = () => {
-    if (month === 0) {
-      monthIncrease(11);
-      yearIncrease((prev) => prev - 1);
-      setToday(new Date(year, month - 1, 1).getDate());
-    } else {
-      monthIncrease((prev) => prev - 1);
-      setToday(new Date(year, month - 1, 1).getDate());
-    }
-  };
-
-  const goToNextMonth = () => {
-    if (month === 11) {
-      monthIncrease(0);
-      yearIncrease((prev) => prev + 1);
-      setToday(new Date(year, month - 1, 1).getDate());
-    } else {
-      monthIncrease((prev) => prev + 1);
-      setToday(new Date(year, month - 1, 1).getDate());
-    }
   };
 
   return (
@@ -62,6 +35,7 @@ const Header = ({ month, monthIncrease, year, yearIncrease }: HeaderProps) => {
             />
           </IconWrapper>
         </div>
+        <CalendarSwitcher />
         <ul
           className={clsx(
             showViewOptions ? "flex transition duration-500" : "hidden",
@@ -97,9 +71,13 @@ const Header = ({ month, monthIncrease, year, yearIncrease }: HeaderProps) => {
             <ThinArrowRightIcon strokeWidth={2} />
           </IconWrapper>
           <p className="flex gap-2 font-bold tracking-wider text-xl mx-2">
-            <span>{today < 10 ? `0${today}` : today}</span>
-            <span>{monthNames[month]}</span>
-            <span>{year}</span>
+            {calendarType === "gregorian" ? (
+              viewDate.format("DD MMMM YYYY")
+            ) : (
+              <span dir="rtl" className="font-semibold text-2xl">
+                {viewDate.format("YYYY - MMMM - DD")}
+              </span>
+            )}
           </p>
           <IconWrapper
             onClickFn={goToNextMonth}
@@ -114,11 +92,7 @@ const Header = ({ month, monthIncrease, year, yearIncrease }: HeaderProps) => {
         <div className="flex items-center">
           <button
             type="button"
-            onClick={() => {
-              monthIncrease(new Date().getMonth());
-              yearIncrease(new Date().getFullYear());
-              setToday(new Date().getDate());
-            }}
+            onClick={() => goToToday()}
             className="mr-2 bg-orange-400 hover:bg-orange-500 px-4 py-1 rounded-md pointer"
           >
             <p className="font-semibold text-white/90 text-md">Today</p>
