@@ -11,16 +11,17 @@ interface CalendarCell {
 
 export const useGenerateCalendarCells = (): CalendarCell[] => {
   const { viewDate } = useCalendarStore();
+
   const cells: CalendarCell[] = [];
   const totalCells = 42; // 6 هفته * 7 روز
 
   // 2. محاسبه اطلاعات اصلی ماه جاری
-  const startOfMonth = viewDate.toFirstOfMonth();
+  const startOfMonth = new DateObject(viewDate.toFirstOfMonth());
   const daysInMonth = viewDate.month.length;
   const startDayOfWeek = startOfMonth.weekDay.index; // 0 (Sunday) تا 6 (Saturday)
 
   // 3. پر کردن روزهای ماه قبل
-  const prevMonth = startOfMonth.subtract(1, "month");
+  const prevMonth = new DateObject(startOfMonth).subtract(1, "month");
   const prevMonthDays = prevMonth.month.length;
 
   for (let i = 0; i < startDayOfWeek; i++) {
@@ -38,7 +39,6 @@ export const useGenerateCalendarCells = (): CalendarCell[] => {
   // 4. پر کردن روزهای ماه جاری
   for (let dayNumber = 1; dayNumber <= daysInMonth; dayNumber++) {
     const dateObj = new DateObject(startOfMonth).set("day", dayNumber);
-
     cells.push({
       key: `current-${dayNumber}`,
       dayNumber,
@@ -49,7 +49,7 @@ export const useGenerateCalendarCells = (): CalendarCell[] => {
 
   // 5. پر کردن روزهای ماه بعد
   const remainingCells = totalCells - cells.length;
-  const nextMonth = startOfMonth.add(1, "month");
+  const nextMonth = new DateObject(startOfMonth).add(1, "month");
 
   for (let dayNumber = 1; dayNumber <= remainingCells; dayNumber++) {
     const dateObj = new DateObject(nextMonth).set("day", dayNumber);

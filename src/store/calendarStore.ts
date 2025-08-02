@@ -19,8 +19,8 @@ interface CalendarState {
 
 export const useCalendarStore = create<CalendarState>((set, get) => ({
   calendarType: "gregorian",
-  // ✨ تاریخ اولیه با تقویم و زبان مشخص فارسی
-  viewDate: new DateObject(),
+  // ✨ ۱. راه حل: از ابتدا با تقویم و زبان صحیح ساخته می‌شود
+  viewDate: new DateObject({ calendar: gregorian, locale: gregorian_en }),
 
   setCalendarType: (type) => {
     const { calendarType } = get();

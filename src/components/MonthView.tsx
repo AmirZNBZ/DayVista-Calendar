@@ -1,12 +1,12 @@
 import clsx from "clsx";
-import { daysOfWeekEn, daysOfWeekFa } from "../constants";
-import { useGenerateCalendarCells } from "../hooks/useCalendarCells";
-import { useEventStore } from "../store/eventStore";
-import AddEventForm from "./AddEventForm";
-import Modal from "./modal/Modal";
 import React from "react";
+import Modal from "./modal/Modal";
+import AddEventForm from "./AddEventForm";
+import { useEventStore } from "../store/eventStore";
+import { daysOfWeekEn, daysOfWeekFa } from "../constants";
 import type { CalendarEvent } from "../types/globalTypes";
 import { useCalendarStore } from "../store/calendarStore";
+import { useGenerateCalendarCells } from "../hooks/useCalendarCells";
 
 const MonthView = () => {
   const eventStore = useEventStore();
@@ -29,8 +29,8 @@ const MonthView = () => {
 
   const daysOfWeek = calendarType === "persian" ? daysOfWeekFa : daysOfWeekEn;
 
-  // console.log("rows", rows);
-  // console.log("events", eventStore.events);
+  console.log("rows", rows);
+  console.log("events", eventStore.events);
 
   return (
     <Modal>

@@ -1,7 +1,12 @@
-import { v4 as uuidv4 } from "uuid";
 import { useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 import type { CalendarEvent } from "../types/globalTypes";
+import { useCalendarStore } from "../store/calendarStore";
+import persian from "react-date-object/calendars/persian";
+import persian_fa from "react-date-object/locales/persian_fa";
+import gregorian from "react-date-object/calendars/gregorian";
 import DatePicker, { DateObject } from "react-multi-date-picker";
+import gregorian_en from "react-date-object/locales/gregorian_en";
 import AnalogTimePicker from "react-multi-date-picker/plugins/analog_time_picker";
 
 interface Props {
@@ -15,11 +20,6 @@ interface Props {
 
 const colors = ["#6366f1", "#22c55e", "#ef4444", "#f59e0b", "#a855f7", "#6b7280"];
 
-const createDateObject = (dateStr?: string, timeStr?: string): Date | null => {
-  if (!dateStr || !timeStr) return null;
-  return new Date(`${dateStr} ${timeStr}`);
-};
-
 export default function AddEventForm({
   onAdd,
   toDate,
@@ -28,34 +28,46 @@ export default function AddEventForm({
   onCloseModal,
   initialEvent,
 }: Props) {
+  const { calendarType } = useCalendarStore();
+
+  const calendar = calendarType === "persian" ? persian : gregorian;
+  const locale = calendarType === "persian" ? persian_fa : gregorian_en;
+
+  const getInitialDate = (dateStr?: string, timeStr?: string): DateObject | null => {
+    if (dateStr && timeStr) {
+      // اگر هم تاریخ و هم زمان داشتیم (حالت ویرایش)
+      return new DateObject({ date: `${dateStr} ${timeStr}`, calendar, locale });
+    }
+    if (dateStr) {
+      // اگر فقط تاریخ داشتیم (حالت ساخت رویداد جدید)
+      return new DateObject({ date: dateStr, calendar, locale });
+    }
+    return null;
+  };
 
   const [title, setTitle] = useState(initialEvent?.title || "");
   const [color, setColor] = useState(initialEvent?.color || "#6366f1");
   const [description, setDescription] = useState(initialEvent?.description || "");
 
-  const [fromDateTime, setFromDateTime] = useState<Date | null>(
-    createDateObject(initialEvent?.fromDate, initialEvent?.fromTime) || createDateObject(fromDate, "00:00")
+  const [fromDateTime, setFromDateTime] = useState<DateObject | null>(
+    getInitialDate(initialEvent?.fromDate || fromDate, initialEvent?.fromTime)
   );
-  const [toDateTime, setToDateTime] = useState<Date | null>(
-    createDateObject(initialEvent?.toDate, initialEvent?.toTime) || createDateObject(toDate, "00:00")
+  const [toDateTime, setToDateTime] = useState<DateObject | null>(
+    getInitialDate(initialEvent?.toDate || toDate, initialEvent?.toTime)
   );
-
   const handleSubmit = () => {
-    // ✨ ۳. تفکیک تاریخ و زمان قبل از ذخیره
-    if (!fromDateTime || !toDateTime) return; // جلوگیری از ذخیره در صورت خالی بودن
+    if (!fromDateTime || !toDateTime) return;
 
-    const fromDateObject = new DateObject(fromDateTime);
-    const toDateObject = new DateObject(toDateTime);
-    
     const newEvent: CalendarEvent = {
       color,
       title,
       description,
       id: initialEvent?.id || uuidv4(),
-      toTime: toDateObject.format("HH:mm"),
-      fromTime: fromDateObject.format("HH:mm"),
-      toDate: toDateObject.format("YYYY-MM-DD"),
-      fromDate: fromDateObject.format("YYYY-MM-DD"),
+      // ✨ ۳. تبدیل به رشته فقط در لحظه ذخیره نهایی انجام می‌شود.
+      toTime: toDateTime.format("HH:mm"),
+      fromTime: fromDateTime.format("HH:mm"),
+      toDate: toDateTime.format("YYYY-MM-DD"),
+      fromDate: fromDateTime.format("YYYY-MM-DD"),
     };
     onAdd(newEvent);
     onCloseModal?.();
@@ -80,28 +92,26 @@ export default function AddEventForm({
           <label className="block text-sm font-medium text-gray-700 mb-1">از</label>
           <DatePicker
             value={fromDateTime}
+            onChange={setFromDateTime} // ✨ ۴. تابع onChange بسیار ساده شد.
             format="YYYY/MM/DD - HH:mm"
             calendarPosition="bottom-right"
             plugins={[<AnalogTimePicker hideSeconds />]}
+            calendar={calendar}
+            locale={locale}
             inputClass="w-full border rounded px-3 py-2"
-            onChange={(date: DateObject | null) => {
-              if (date) setFromDateTime(date.toDate());
-              else setFromDateTime(null);
-            }}
           />
         </div>
         <div className="flex-1">
           <label className="block text-sm font-medium text-gray-700 mb-1">تا</label>
           <DatePicker
             value={toDateTime}
+            onChange={setToDateTime} // ✨ ۴. تابع onChange بسیار ساده شد.
             format="YYYY/MM/DD - HH:mm"
             calendarPosition="bottom-right"
             plugins={[<AnalogTimePicker hideSeconds />]}
+            calendar={calendar}
+            locale={locale}
             inputClass="w-full border rounded px-3 py-2"
-            onChange={(date: DateObject | null) => {
-              if (date) setToDateTime(date.toDate());
-              else setToDateTime(null);
-            }}
           />
         </div>
       </div>

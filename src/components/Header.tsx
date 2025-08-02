@@ -1,13 +1,13 @@
 import clsx from "clsx";
-import React, { useState } from "react";
+import { useState } from "react";
+import IconWrapper from "./IconWrapper";
 import { VIEW_OPTIONS } from "../constants";
 import ArrowDownIcon from "../icons/ArrowDown";
 import FilterListIcon from "../icons/FilterList";
-import ThinArrowRightIcon from "../icons/ThinArrowRight";
-import type { VIEW_OPTIONS_TYPES } from "../types/globalTypes";
-import IconWrapper from "./IconWrapper";
 import CalendarSwitcher from "./ClanedarSwitcher";
+import ThinArrowRightIcon from "../icons/ThinArrowRight";
 import { useCalendarStore } from "../store/calendarStore";
+import type { VIEW_OPTIONS_TYPES } from "../types/globalTypes";
 
 const Header = () => {
   const { goToToday, viewDate, calendarType, goToNextMonth, goToPrevMonth } = useCalendarStore();
