@@ -1,8 +1,13 @@
-import { v4 as uuidv4 } from "uuid";
 import { useState } from "react";
-import type { CalendarEvent } from "../types/globalTypes";
+import gregorian from "react-date-object/calendars/gregorian";
+import persian from "react-date-object/calendars/persian";
+import gregorian_en from "react-date-object/locales/gregorian_en";
+import persian_fa from "react-date-object/locales/persian_fa";
 import DatePicker, { DateObject } from "react-multi-date-picker";
 import AnalogTimePicker from "react-multi-date-picker/plugins/analog_time_picker";
+import { v4 as uuidv4 } from "uuid";
+import { useCalendarStore } from "../store/calendarStore";
+import type { CalendarEvent } from "../types/globalTypes";
 
 interface Props {
   toDate?: string;
@@ -28,7 +33,7 @@ export default function AddEventForm({
   onCloseModal,
   initialEvent,
 }: Props) {
-
+  const { calendarType } = useCalendarStore();
   const [title, setTitle] = useState(initialEvent?.title || "");
   const [color, setColor] = useState(initialEvent?.color || "#6366f1");
   const [description, setDescription] = useState(initialEvent?.description || "");
@@ -46,7 +51,7 @@ export default function AddEventForm({
 
     const fromDateObject = new DateObject(fromDateTime);
     const toDateObject = new DateObject(toDateTime);
-    
+
     const newEvent: CalendarEvent = {
       color,
       title,
@@ -88,6 +93,8 @@ export default function AddEventForm({
               if (date) setFromDateTime(date.toDate());
               else setFromDateTime(null);
             }}
+            calendar={calendarType === "persian" ? persian : gregorian}
+            locale={calendarType === "persian" ? persian_fa : gregorian_en}
           />
         </div>
         <div className="flex-1">
@@ -102,6 +109,8 @@ export default function AddEventForm({
               if (date) setToDateTime(date.toDate());
               else setToDateTime(null);
             }}
+            calendar={calendarType === "persian" ? persian : gregorian}
+            locale={calendarType === "persian" ? persian_fa : gregorian_en}
           />
         </div>
       </div>

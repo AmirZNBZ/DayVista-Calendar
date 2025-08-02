@@ -1,20 +1,26 @@
 import clsx from "clsx";
-import { daysOfWeek } from "../constants";
+import { daysOfWeekEn, daysOfWeekFa } from "../constants";
 import { generateCalendarCells } from "../hooks/useCalendarCells";
 import { useEventStore } from "../store/eventStore";
 import AddEventForm from "./AddEventForm";
 import Modal from "./modal/Modal";
 import React from "react";
 import type { CalendarEvent } from "../types/globalTypes";
+import { useCalendarStore } from "../store/calendarStore";
 
-interface MonthViewProps {
-  year: number;
-  month: number;
-}
+// interface MonthViewProps {
+//   year: number;
+//   month: number;
+// }
 
-const MonthView = ({ year, month }: MonthViewProps) => {
+const MonthView = () => {
   const eventStore = useEventStore();
-  const generatedDate = generateCalendarCells(year, month);
+  const { calendarType, viewDate } = useCalendarStore();
+
+  const year = calendarType === "persian" ? viewDate.jYear() : viewDate.year();
+  const month = calendarType === "persian" ? viewDate.jMonth() : viewDate.month();
+
+  const generatedDate = generateCalendarCells(year, month, calendarType);
 
   const rows = Array.from({ length: 6 }, (_, rowIndex) =>
     generatedDate.slice(rowIndex * 7, rowIndex * 7 + 7)
@@ -29,6 +35,8 @@ const MonthView = ({ year, month }: MonthViewProps) => {
   const deleteEvent = (id: CalendarEvent["id"]) => {
     eventStore.deleteEvent(id);
   };
+
+  const daysOfWeek = calendarType === "gregorian" ? daysOfWeekEn : daysOfWeekFa;
 
   console.log("rows", rows);
   console.log("events", eventStore.events);

@@ -26,3 +26,5 @@ export type CalendarEvent = {
   fromTime: string;
   description?: string;
 };
+
+export type CalendarType = "gregorian" | "persian";

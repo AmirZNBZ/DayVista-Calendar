@@ -21,6 +21,7 @@
     "dayjs-jalali": "^0.0.2",
     "eslint-plugin-react": "^7.37.5",
     "jalali-plugin-dayjs": "^1.1.4",
+    "jalaliday": "^3.1.0",
     "moment": "^2.30.1",
     "moment-jalaali": "^0.10.4",
     "prettier": "^3.6.2",

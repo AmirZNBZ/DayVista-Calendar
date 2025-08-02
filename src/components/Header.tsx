@@ -1,53 +1,67 @@
 import clsx from "clsx";
-import React, { useState } from "react";
-import { monthNames, VIEW_OPTIONS } from "../constants";
+import { useEffect, useState } from "react";
+import { VIEW_OPTIONS } from "../constants";
 import ArrowDownIcon from "../icons/ArrowDown";
 import FilterListIcon from "../icons/FilterList";
 import ThinArrowRightIcon from "../icons/ThinArrowRight";
+import { useCalendarStore } from "../store/calendarStore";
 import type { VIEW_OPTIONS_TYPES } from "../types/globalTypes";
+import CalendarSwitcher from "./CalendarSwitcher";
 import IconWrapper from "./IconWrapper";
 
-interface HeaderProps {
-  year: number;
-  month: number;
-  yearIncrease: React.Dispatch<React.SetStateAction<number>>;
-  monthIncrease: React.Dispatch<React.SetStateAction<number>>;
-}
+// interface HeaderProps {
+//   year: number;
+//   month: number;
+//   yearIncrease: React.Dispatch<React.SetStateAction<number>>;
+//   monthIncrease: React.Dispatch<React.SetStateAction<number>>;
+// }
 
-const Header = ({ month, monthIncrease, year, yearIncrease }: HeaderProps) => {
+const Header = () => {
+  const { calendarType, viewDate, goToNextMonth, goToPrevMonth, goToToday } = useCalendarStore();
   const [showViewOptions, setShowViewOptions] = useState<boolean>(false);
-  const [today, setToday] = useState<number>(new Date().getDate());
+  // const [today, setToday] = useState<number>(new Date().getDate());
   const [selectedView, setSelectedView] = useState<VIEW_OPTIONS_TYPES>(VIEW_OPTIONS[0]);
+
+  const [displayDate, setDisplayDate] = useState("");
+
+  useEffect(() => {
+    if (calendarType === "persian") {
+      setDisplayDate(viewDate.format("jMMMM jYYYY"));
+    } else {
+      setDisplayDate(viewDate.format("MMMM YYYY"));
+    }
+  }, [viewDate, calendarType]);
 
   const handleShowViewOptions = () => {
     setShowViewOptions((prev) => !prev);
   };
 
-  const goToPrevMonth = () => {
-    if (month === 0) {
-      monthIncrease(11);
-      yearIncrease((prev) => prev - 1);
-      setToday(new Date(year, month - 1, 1).getDate());
-    } else {
-      monthIncrease((prev) => prev - 1);
-      setToday(new Date(year, month - 1, 1).getDate());
-    }
-  };
+  // const goToPrevMonth = () => {
+  //   if (month === 0) {
+  //     monthIncrease(11);
+  //     yearIncrease((prev) => prev - 1);
+  //     setToday(new Date(year, month - 1, 1).getDate());
+  //   } else {
+  //     monthIncrease((prev) => prev - 1);
+  //     setToday(new Date(year, month - 1, 1).getDate());
+  //   }
+  // };
 
-  const goToNextMonth = () => {
-    if (month === 11) {
-      monthIncrease(0);
-      yearIncrease((prev) => prev + 1);
-      setToday(new Date(year, month - 1, 1).getDate());
-    } else {
-      monthIncrease((prev) => prev + 1);
-      setToday(new Date(year, month - 1, 1).getDate());
-    }
-  };
+  // const goToNextMonth = () => {
+  //   if (month === 11) {
+  //     monthIncrease(0);
+  //     yearIncrease((prev) => prev + 1);
+  //     setToday(new Date(year, month - 1, 1).getDate());
+  //   } else {
+  //     monthIncrease((prev) => prev + 1);
+  //     setToday(new Date(year, month - 1, 1).getDate());
+  //   }
+  // };
 
   return (
     <div className="w-full flex justify-between items-center mx-auto relative">
       <section id="viewOptionsButton" className="relative flex justify-between items-center max-w-4/12">
+        <CalendarSwitcher />
         <div
           onClick={handleShowViewOptions}
           className="inline-flex items-center min-w-1/5 py-1 px-4 rounded-md pointer min-w- hover:bg-gray-300/50 transition-colors"
@@ -97,9 +111,10 @@ const Header = ({ month, monthIncrease, year, yearIncrease }: HeaderProps) => {
             <ThinArrowRightIcon strokeWidth={2} />
           </IconWrapper>
           <p className="flex gap-2 font-bold tracking-wider text-xl mx-2">
-            <span>{today < 10 ? `0${today}` : today}</span>
+            {displayDate}
+            {/* <span>{today < 10 ? `0${today}` : today}</span>
             <span>{monthNames[month]}</span>
-            <span>{year}</span>
+            <span>{year}</span> */}
           </p>
           <IconWrapper
             onClickFn={goToNextMonth}
@@ -115,9 +130,9 @@ const Header = ({ month, monthIncrease, year, yearIncrease }: HeaderProps) => {
           <button
             type="button"
             onClick={() => {
-              monthIncrease(new Date().getMonth());
-              yearIncrease(new Date().getFullYear());
-              setToday(new Date().getDate());
+              // monthIncrease(new Date().getMonth());
+              // yearIncrease(new Date().getFullYear());
+              goToToday();
             }}
             className="mr-2 bg-orange-400 hover:bg-orange-500 px-4 py-1 rounded-md pointer"
           >
