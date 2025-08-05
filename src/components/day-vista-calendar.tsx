@@ -3,11 +3,11 @@ import MonthView from "./MonthView";
 
 const DayVistaCalendar = () => {
   return (
-    <main className="container w-full mx-auto my-16 border border-gray-200 shadow-1xl p-2 rounded-md">
-      <Header />
-
-      <div className="my-4" />
-      <MonthView />
+    <main className="max-w-7xl w-full mx-auto my-16">
+      <div className="mx-2 border border-gray-200 shadow-1xl rounded-md">
+        <Header />
+        <MonthView />
+      </div>
     </main>
   );
 };

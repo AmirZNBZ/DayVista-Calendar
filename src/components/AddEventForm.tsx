@@ -1,13 +1,16 @@
+import clsx from "clsx";
 import { useState } from "react";
-import { v4 as uuidv4 } from "uuid";
-import type { CalendarEvent } from "../types/globalTypes";
-import { useCalendarStore } from "../store/calendarStore";
-import persian from "react-date-object/calendars/persian";
-import persian_fa from "react-date-object/locales/persian_fa";
 import gregorian from "react-date-object/calendars/gregorian";
-import DatePicker, { DateObject } from "react-multi-date-picker";
+import persian from "react-date-object/calendars/persian";
 import gregorian_en from "react-date-object/locales/gregorian_en";
+import persian_fa from "react-date-object/locales/persian_fa";
+import DatePicker, { DateObject } from "react-multi-date-picker";
 import AnalogTimePicker from "react-multi-date-picker/plugins/analog_time_picker";
+import { v4 as uuidv4 } from "uuid";
+import TrashIcon from "../icons/Trash";
+import { useCalendarStore } from "../store/calendarStore";
+import type { CalendarEvent } from "../types/globalTypes";
+import IconWrapper from "./IconWrapper";
 
 interface Props {
   toDate?: string;
@@ -42,6 +45,7 @@ export default function AddEventForm({
 
   const [title, setTitle] = useState(initialEvent?.title || "");
   const [color, setColor] = useState(initialEvent?.color || "#6366f1");
+  const [allDayChecked, setAllDayChecked] = useState(initialEvent?.allDay || false);
   const [description, setDescription] = useState(initialEvent?.description || "");
 
   const [fromDateTime, setFromDateTime] = useState<DateObject | null>(
@@ -57,6 +61,7 @@ export default function AddEventForm({
       color,
       title,
       description,
+      allDay: allDayChecked,
       id: initialEvent?.id || uuidv4(),
       // ✨ ۳. تبدیل به رشته فقط در لحظه ذخیره نهایی انجام می‌شود.
       start: fromDateTime.toDate().toISOString(),
@@ -64,6 +69,25 @@ export default function AddEventForm({
     };
     onAdd(newEvent);
     onCloseModal?.();
+  };
+
+  const handleCheckAllDay = () => {
+    setAllDayChecked((prevIsChecked) => {
+      const isNowChecked = !prevIsChecked;
+
+      if (isNowChecked) {
+        if (fromDateTime) {
+          const endOfDay = new DateObject(fromDateTime).set("hour", 23).set("minute", 59).set("second", 59);
+
+          setToDateTime(endOfDay);
+        }
+      } else {
+        setToDateTime(getInitialDate(toDate));
+        setFromDateTime(getInitialDate(fromDate));
+      }
+
+      return isNowChecked;
+    });
   };
 
   return (
@@ -82,32 +106,44 @@ export default function AddEventForm({
       />
       <div className="flex gap-4">
         <div className="flex-1">
-          <label className="block text-sm font-medium text-gray-700 mb-1">از</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">From</label>
           <DatePicker
+            locale={locale}
+            calendar={calendar}
             value={fromDateTime}
-            onChange={setFromDateTime} // ✨ ۴. تابع onChange بسیار ساده شد.
+            disabled={allDayChecked}
+            onChange={setFromDateTime}
             format="YYYY/MM/DD - HH:mm"
             calendarPosition="bottom-right"
             plugins={[<AnalogTimePicker hideSeconds />]}
-            calendar={calendar}
-            locale={locale}
-            inputClass="w-full border rounded px-3 py-2"
+            inputClass={clsx(allDayChecked ? "bg-gray-400" : "", "w-full border rounded px-3 py-2")}
           />
         </div>
         <div className="flex-1">
-          <label className="block text-sm font-medium text-gray-700 mb-1">تا</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">To</label>
           <DatePicker
+            locale={locale}
             value={toDateTime}
-            onChange={setToDateTime} // ✨ ۴. تابع onChange بسیار ساده شد.
+            calendar={calendar}
+            disabled={allDayChecked}
+            onChange={setToDateTime}
             format="YYYY/MM/DD - HH:mm"
             calendarPosition="bottom-right"
             plugins={[<AnalogTimePicker hideSeconds />]}
-            calendar={calendar}
-            locale={locale}
-            inputClass="w-full border rounded px-3 py-2"
+            inputClass={clsx(allDayChecked ? "bg-gray-400" : "", "w-full border rounded px-3 py-2")}
           />
         </div>
       </div>
+      <div className="flex items-center">
+        <label className="switch">
+          <input type="checkbox" id="allDaySwitch" checked={allDayChecked} onChange={handleCheckAllDay} />
+          <span className="slider"></span>
+        </label>
+        <label htmlFor="allDaySwitch" className="ml-2">
+          All Day
+        </label>
+      </div>
+
       <div className="flex gap-2">
         {colors.map((c) => (
           <div
@@ -118,21 +154,34 @@ export default function AddEventForm({
           />
         ))}
       </div>
-      <div className="flex justify-between mt-4">
-        {initialEvent && onDelete && (
-          <button
-            className="px-4 py-2 bg-red-500 text-white rounded"
-            onClick={() => {
-              onCloseModal?.();
-              onDelete(initialEvent.id);
-            }}
-          >
-            حذف
-          </button>
+      <div
+        className={clsx(
+          initialEvent && onDelete ? "justify-between" : "justify-end",
+          "flex items-center mt-4"
         )}
-        <button onClick={handleSubmit} className="ml-auto px-4 py-2 bg-blue-600 text-white rounded">
-          ذخیره
-        </button>
+      >
+        {initialEvent && onDelete && (
+          <IconWrapper
+            onClickFn={() => onDelete(initialEvent.id)}
+            className="pointer hover:bg-gray-100 w-10 h-10 rounded-full items-center flex justify-center hover:transition-colors hover:duration-300 hover:ease-in-out"
+          >
+            <TrashIcon fill="red" />
+          </IconWrapper>
+        )}
+        <div className="self-end">
+          <button
+            onClick={onCloseModal}
+            className="ml-auto px-4 mx-1 py-2 bg-blue-600/80 hover:bg-blue-900/90 text-white rounded"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSubmit}
+            className="ml-auto px-4 py-2 bg-blue-600/80 hover:bg-blue-900/90 text-white rounded"
+          >
+            {onDelete ? "UPDATE" : "ADD"}
+          </button>
+        </div>
       </div>
     </div>
   );
