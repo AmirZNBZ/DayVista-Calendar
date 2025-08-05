@@ -19,7 +19,7 @@ const Header = () => {
   };
 
   return (
-    <div className="w-full flex justify-between items-center mx-auto relative">
+    <div className="w-full flex justify-between items-center mx-auto relative py-2">
       <section id="viewOptionsButton" className="relative flex justify-between items-center max-w-4/12">
         <div
           onClick={handleShowViewOptions}

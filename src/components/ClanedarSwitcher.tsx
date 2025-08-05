@@ -1,10 +1,6 @@
-import DateObject from "react-date-object";
 import { useCalendarStore } from "../store/calendarStore";
-import gregorian from "react-date-object/calendars/gregorian";
 
 export default function CalendarSwitcher() {
-  console.log("new DATEOBJECT", new DateObject({calendar: gregorian}).month);
-
   const { calendarType, setCalendarType } = useCalendarStore();
 
   return (
