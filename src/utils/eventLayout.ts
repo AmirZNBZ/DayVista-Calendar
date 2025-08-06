@@ -5,7 +5,7 @@ export const processEventsForLayout = (
   locale: Locale,
   events: CalendarEvent[],
   visibleDays: { date: string }[],
-  calendar: Omit<Calendar, "leapsLength">
+  calendar: Omit<Calendar, "leapsLength">,
 ): Map<string, EventSegment[]> => {
   const layoutMap = new Map<string, EventSegment[]>();
   visibleDays.forEach((day) => layoutMap.set(day.date, []));
