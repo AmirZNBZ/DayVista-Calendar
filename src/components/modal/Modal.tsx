@@ -1,11 +1,10 @@
-import { cloneElement, createContext, useContext, useState } from "react";
+import { cloneElement, useState } from "react";
 import { createPortal } from "react-dom";
 import { useOutsideClick } from "../../hooks/useOutSideClick";
 import CloseIcon from "../../icons/Close";
 import IconWrapper from "../IconWrapper";
-import type { ModalContextType, ModalProps, OpenProps, WindowProps } from "./type";
-
-const ModalContext = createContext<ModalContextType | null>(null);
+import type { ModalProps, OpenProps, WindowProps } from "./type";
+import { ModalContext, useModal } from "./ModalContext";
 
 function Modal({ children }: ModalProps) {
   const [openName, setOpenName] = useState<string>("");
@@ -14,14 +13,6 @@ function Modal({ children }: ModalProps) {
   const open = setOpenName;
 
   return <ModalContext.Provider value={{ openName, close, open }}>{children}</ModalContext.Provider>;
-}
-
-function useModal() {
-  const context = useContext(ModalContext);
-  if (context === null) {
-    throw new Error("Modal components must be used within a Modal provider");
-  }
-  return context;
 }
 
 function Open({ children, opens: opensWindowName, stopClickPropagation = false }: OpenProps) {

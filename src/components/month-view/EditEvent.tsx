@@ -1,13 +1,12 @@
-import React, { useEffect } from "react";
-import Modal from "../modal/Modal";
-import AddEventForm from "../AddEventForm";
-import type { CalendarEvent, EventSegment } from "../../types/globalTypes";
-import { useEventStore } from "../../store/eventStore";
-import { useDrag } from "react-dnd";
 import clsx from "clsx";
-import { getEmptyImage } from "react-dnd-html5-backend";
+import Modal from "../modal/Modal";
+import { useDrag } from "react-dnd";
+import React, { useEffect } from "react";
 import DateObject from "react-date-object";
-
+import AddEventForm from "../AddEventForm";
+import { useEventStore } from "../../store/eventStore";
+import { getEmptyImage } from "react-dnd-html5-backend";
+import type { CalendarEvent, EventSegment } from "../../types/globalTypes";
 interface EditEventProps {
   isEnd?: boolean;
   isStart?: boolean;
@@ -63,52 +62,58 @@ const EditEvent = ({
   const listStyle: React.CSSProperties & { "--event-color"?: string } = {
     backgroundColor: event.color,
   };
+
   if (isMultiDay) {
     listStyle["--event-color"] = event.color;
   }
 
+  const listViewMode = (
+    <li
+      data-no-outside-click
+      style={listStyle}
+      className={clsx(
+        "relative cursor-pointer p-2 text-sm text-white ",
+        isMultiDay ? "rounded-l-md" : "rounded-md",
+        isMultiDay && [
+          "after:content-[''] after:absolute after:top-0 after:right-[-12px] after:w-0 after:h-0",
+          "after:border-t-[18px] after:border-t-transparent",
+          "after:border-b-[18px] after:border-b-transparent",
+          "after:border-l-[12px] after:border-l-[var(--event-color)]",
+        ]
+      )}
+    >
+      <span className="font-bold">{event.title}</span>
+    </li>
+  );
+
+  const gridViewMode = (
+    <li
+      ref={dragEventRef as unknown as React.Ref<HTMLLIElement>}
+      key={event.id}
+      data-no-outside-click
+      style={{
+        backgroundColor: event.color,
+        opacity: isDragging ? 0.5 : 1,
+        top: `${topPosition + 20}px`,
+      }}
+      className={clsx(
+        "absolute left-0 right-0 overflow-hidden cursor-pointer text-ellipsis whitespace-nowrap px-1 text-sm text-white hover:cursor-grab active:cursor-grabbing",
+        isStart && "rounded-l-md",
+        isEnd && "rounded-r-md",
+        !isStart && "ml-[-8px]",
+        !isEnd && "mr-[-1px]"
+      )}
+    >
+      {isStart && <span className="font-bold">{event.title}</span>}
+    </li>
+  );
+
   return (
     <React.Fragment key={event.id}>
       <Modal.Open opens={event.id} stopClickPropagation={true}>
-        {viewMode === "grid" ? (
-          <li
-            ref={dragEventRef as unknown as React.Ref<HTMLLIElement>}
-            key={event.id}
-            data-no-outside-click
-            style={{
-              backgroundColor: event.color,
-              opacity: isDragging ? 0.5 : 1,
-              top: `${topPosition + 20}px`,
-            }}
-            className={clsx(
-              "absolute left-0 right-0 overflow-hidden cursor-pointer text-ellipsis whitespace-nowrap px-1 text-sm text-white hover:cursor-grab active:cursor-grabbing",
-              isStart && "rounded-l-md",
-              isEnd && "rounded-r-md",
-              !isStart && "ml-[-8px]",
-              !isEnd && "mr-[-1px]"
-            )}
-          >
-            {isStart && <span className="font-bold">{event.title}</span>}
-          </li>
-        ) : (
-          <li
-            data-no-outside-click
-            style={listStyle}
-            className={clsx(
-              "relative cursor-pointer p-2 text-sm text-white ",
-              isMultiDay ? "rounded-l-md" : "rounded-md",
-              isMultiDay && [
-                "after:content-[''] after:absolute after:top-0 after:right-[-12px] after:w-0 after:h-0",
-                "after:border-t-[18px] after:border-t-transparent",
-                "after:border-b-[18px] after:border-b-transparent",
-                "after:border-l-[12px] after:border-l-[var(--event-color)]",
-              ]
-            )}
-          >
-            <span className="font-bold">{event.title}</span>
-          </li>
-        )}
+        {viewMode === "grid" ? gridViewMode : listViewMode}
       </Modal.Open>
+
       <Modal.Window name={event.id}>
         <AddEventForm
           toDate={event.end}
