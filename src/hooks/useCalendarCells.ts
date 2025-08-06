@@ -29,7 +29,7 @@ export const useGenerateCalendarCells = (): CalendarCell[] => {
     const dateObj = new DateObject(prevMonth).set("day", dayNumber);
 
     cells.push({
-      key: `prev-${dayNumber}`,
+      key: dateObj.format("YYYY-MM-DD"),
       dayNumber,
       isCurrentMonth: false,
       date: dateObj.format("YYYY-MM-DD"),
@@ -40,7 +40,7 @@ export const useGenerateCalendarCells = (): CalendarCell[] => {
   for (let dayNumber = 1; dayNumber <= daysInMonth; dayNumber++) {
     const dateObj = new DateObject(startOfMonth).set("day", dayNumber);
     cells.push({
-      key: `current-${dayNumber}`,
+      key: dateObj.format("YYYY-MM-DD"),
       dayNumber,
       isCurrentMonth: true,
       date: dateObj.format("YYYY-MM-DD"),
@@ -55,7 +55,7 @@ export const useGenerateCalendarCells = (): CalendarCell[] => {
     const dateObj = new DateObject(nextMonth).set("day", dayNumber);
 
     cells.push({
-      key: `next-${dayNumber}`,
+      key: dateObj.format("YYYY-MM-DD"),
       dayNumber,
       isCurrentMonth: false,
       date: dateObj.format("YYYY-MM-DD"),

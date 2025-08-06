@@ -42,7 +42,7 @@ export const useMonthView = () => {
       .set("second", originalStart.second);
 
     console.log("before add second START DATE", newStartDate);
-    const newEndDate = new DateObject({ date: newStartDate, calendar, locale }).add(duration, "second");
+    const newEndDate = new DateObject(newStartDate).add(duration, "second");
     console.log("after add second END DATE", newEndDate);
 
     eventStore.updateEvent({

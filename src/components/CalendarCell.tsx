@@ -55,18 +55,18 @@ const CalendarCell = ({ cellData, events, onEventDrop, onAddEvent, calendar, loc
 
   return (
     <React.Fragment key={key}>
-      <Modal.Open opens={key.toString()} key={key}>
-        <td
-          ref={dropRef as unknown as React.Ref<HTMLTableCellElement>}
-          key={key}
-          data-no-outside-click
-          className={clsx(
-            "active:bg-purple-200/20 select-none min-h-28 h-28 p-1 align-top border border-orange-400",
-            isOver && "bg-green-100/70",
-            shouldHighlight && "bg-green-100/70"
-          )}
-        >
-          <div className="relative h-full">
+      <td
+        ref={dropRef as unknown as React.Ref<HTMLTableCellElement>}
+        key={key}
+        data-no-outside-click
+        className={clsx(
+          "active:bg-purple-200/20 select-none min-h-28 h-28 p-1 align-top border border-orange-400",
+          isOver && "bg-green-100/70",
+          shouldHighlight && "bg-green-100/70"
+        )}
+      >
+        <Modal.Open opens={key.toString()} key={key}>
+          <div className="relative h-full pointer">
             <div className="text-right">
               {dayNumber && (
                 <strong className={clsx(!isCurrentMonth ? "text-gray-300" : "")}>{dayNumber}</strong>
@@ -75,8 +75,8 @@ const CalendarCell = ({ cellData, events, onEventDrop, onAddEvent, calendar, loc
 
             <DayEventsList calendar={calendar} date={date} events={events} locale={locale} />
           </div>
-        </td>
-      </Modal.Open>
+        </Modal.Open>
+      </td>
       <Modal.Window name={key.toString()}>
         <AddEventForm fromDate={date || ""} toDate={date || ""} onAdd={onAddEvent} />
       </Modal.Window>
