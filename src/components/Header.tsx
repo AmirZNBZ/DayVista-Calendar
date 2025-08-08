@@ -10,7 +10,7 @@ import { useCalendarStore } from "../store/calendarStore";
 import type { VIEW_OPTIONS_TYPES } from "../types/globalTypes";
 
 const Header = () => {
-  const { goToToday, viewDate, calendarType, goToNextMonth, goToPrevMonth } = useCalendarStore();
+  const { goToToday, viewDate, calendarType, goToNextMonth, goToPrevMonth, setViewType } = useCalendarStore();
   const [showViewOptions, setShowViewOptions] = useState<boolean>(false);
   const [selectedView, setSelectedView] = useState<VIEW_OPTIONS_TYPES>(VIEW_OPTIONS[0]);
 
@@ -39,7 +39,7 @@ const Header = () => {
         <ul
           className={clsx(
             showViewOptions ? "flex transition duration-500" : "hidden",
-            `absolute flex-col bg-white shadow top-10 min-w-[140px] rounded-b-lg p-1`
+            `absolute flex-col bg-white shadow top-10 min-w-[140px] rounded-b-lg p-1 z-100`
           )}
         >
           {VIEW_OPTIONS.map((option, index) => (
@@ -48,6 +48,7 @@ const Header = () => {
               role="button"
               onClick={() => {
                 setSelectedView(option);
+                setViewType(option.value);
                 setShowViewOptions(false);
               }}
               className={clsx(

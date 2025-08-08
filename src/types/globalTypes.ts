@@ -1,8 +1,9 @@
 import type React from "react";
 
+export type ViewType = "Month" | "Week" | "Day" | "WeekList";
 export interface VIEW_OPTIONS_TYPES {
   label: string;
-  value: string;
+  value: ViewType;
   icon: React.ReactNode;
 }
 
