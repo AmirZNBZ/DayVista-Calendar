@@ -42,10 +42,10 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
     const { viewType } = get();
     switch (viewType) {
       case "Month":
-        set((state) => ({ viewDate: state.viewDate.add(1, "month") }));
+        set((state) => ({ viewDate: new DateObject(state.viewDate).add(1, "month") }));
         break;
       case "Week":
-        set((state) => ({ viewDate: state.viewDate.add(7, "day") }));
+        set((state) => ({ viewDate: new DateObject(state.viewDate).add(7, "day") }));
         break;
       default:
         break;
@@ -56,10 +56,10 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
     const { viewType } = get();
     switch (viewType) {
       case "Month":
-        set((state) => ({ viewDate: state.viewDate.subtract(1, "month") }));
+        set((state) => ({ viewDate: new DateObject(state.viewDate).subtract(1, "month") }));
         break;
       case "Week":
-        set((state) => ({ viewDate: state.viewDate.subtract(7, "day") }));
+        set((state) => ({ viewDate: new DateObject(state.viewDate).subtract(7, "day") }));
         break;
 
       default:

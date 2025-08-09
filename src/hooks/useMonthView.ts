@@ -1,23 +1,18 @@
-import persian_fa from "react-date-object/locales/persian_fa";
 import { useCalendarStore } from "../store/calendarStore";
 import { useEventStore } from "../store/eventStore";
 import { useGenerateCalendarCells } from "./useCalendarCells";
-import persian from "react-date-object/calendars/persian";
-import gregorian from "react-date-object/calendars/gregorian";
-import gregorian_en from "react-date-object/locales/gregorian_en";
 import { daysOfWeekEn, daysOfWeekFa } from "../constants";
 import { useMemo } from "react";
 import type { CalendarEvent } from "../types/globalTypes";
 import DateObject from "react-date-object";
 import { processEventsForLayout } from "../utils/eventLayout";
+import { useGetCalendar } from "./useGetCalendar";
 
 export const useMonthView = () => {
   const eventStore = useEventStore();
   const { calendarType } = useCalendarStore();
+  const { calendar, locale } = useGetCalendar();
   const generatedDate = useGenerateCalendarCells();
-
-  const calendar = calendarType === "persian" ? persian : gregorian;
-  const locale = calendarType === "persian" ? persian_fa : gregorian_en;
   const daysOfWeek = calendarType === "persian" ? daysOfWeekFa : daysOfWeekEn;
 
   const rows = useMemo(
@@ -29,7 +24,7 @@ export const useMonthView = () => {
     eventStore.addEvent(event);
   };
 
-  const handleEventDrop = (eventId: string, newDate: string) => {
+  const handleEventDrop = (eventId: string, newDate: DateObject) => {
     const eventToMove = eventStore.events.find((event) => event.id === eventId);
     if (!eventToMove) return;
 

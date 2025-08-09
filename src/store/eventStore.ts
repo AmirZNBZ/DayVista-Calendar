@@ -1,19 +1,20 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { CalendarEvent } from "../types/globalTypes";
+import type DateObject from "react-date-object";
 
 interface EventStore {
   events: CalendarEvent[];
 
   draggedEventInfo: { id: string; duration: number } | null;
-  dropTargetDate: string | null;
+  dropTargetDate: DateObject | null;
 
   addEvent: (event: CalendarEvent) => void;
   updateEvent: (event: CalendarEvent) => void;
   deleteEvent: (id: string) => void;
 
   setDraggedEventInfo: (info: { id: string; duration: number } | null) => void;
-  setDropTargetDate: (date: string | null) => void;
+  setDropTargetDate: (date: DateObject | null) => void;
 }
 
 export const useEventStore = create<EventStore>()(

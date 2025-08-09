@@ -5,11 +5,10 @@ import type { Calendar, Locale } from "react-date-object";
 import type { EventSegment } from "../../types/globalTypes";
 
 interface DayEventsListProps {
-  date: string;
+  date: DateObject;
   locale: Locale;
   events: EventSegment[];
   calendar: Omit<Calendar, "leapsLength">;
-  
 }
 
 const MAX_EVENTS_VISIBLE = 3;

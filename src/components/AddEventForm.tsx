@@ -13,8 +13,8 @@ import type { CalendarEvent } from "../types/globalTypes";
 import IconWrapper from "./IconWrapper";
 
 interface Props {
-  toDate?: string;
-  fromDate?: string;
+  toDate?: DateObject;
+  fromDate?: DateObject;
   onCloseModal?: () => void;
   initialEvent?: CalendarEvent;
   onDelete?: (id: string) => void;
@@ -32,28 +32,24 @@ export default function AddEventForm({
   initialEvent,
 }: Props) {
   const { calendarType } = useCalendarStore();
-
   const calendar = calendarType === "persian" ? persian : gregorian;
   const locale = calendarType === "persian" ? persian_fa : gregorian_en;
-
-  const getInitialDate = (dateString?: string): DateObject | null => {
-    if (dateString) {
-      return new DateObject({ date: dateString, calendar, locale });
-    }
-    return null;
-  };
 
   const [title, setTitle] = useState(initialEvent?.title || "");
   const [color, setColor] = useState(initialEvent?.color || "#6366f1");
   const [allDayChecked, setAllDayChecked] = useState(initialEvent?.allDay || false);
   const [description, setDescription] = useState(initialEvent?.description || "");
 
+  console.log("fromDate", fromDate);
+  console.log("toDate", toDate);
+
   const [fromDateTime, setFromDateTime] = useState<DateObject | null>(
-    getInitialDate(initialEvent?.start || fromDate)
+    initialEvent ? new DateObject({ date: initialEvent.start, calendar, locale }) : fromDate || null
   );
   const [toDateTime, setToDateTime] = useState<DateObject | null>(
-    getInitialDate(initialEvent?.end || toDate)
+    initialEvent ? new DateObject({ date: initialEvent.end, calendar, locale }) : toDate || null
   );
+
   const handleSubmit = () => {
     if (!fromDateTime || !toDateTime) return;
 
@@ -82,8 +78,8 @@ export default function AddEventForm({
           setToDateTime(endOfDay);
         }
       } else {
-        setToDateTime(getInitialDate(toDate));
-        setFromDateTime(getInitialDate(fromDate));
+        setToDateTime(toDate || null);
+        setFromDateTime(fromDate || null);
       }
 
       return isNowChecked;

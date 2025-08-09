@@ -14,6 +14,8 @@ const Header = () => {
   const [showViewOptions, setShowViewOptions] = useState<boolean>(false);
   const [selectedView, setSelectedView] = useState<VIEW_OPTIONS_TYPES>(VIEW_OPTIONS[0]);
 
+  console.log("HEADER is rendering with date:", viewDate.format());
+
   const handleShowViewOptions = () => {
     setShowViewOptions((prev) => !prev);
   };
