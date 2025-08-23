@@ -1,24 +1,45 @@
 import clsx from "clsx";
-import { useState } from "react";
 import IconWrapper from "./IconWrapper";
 import { VIEW_OPTIONS } from "../constants";
 import ArrowDownIcon from "../icons/ArrowDown";
 import FilterListIcon from "../icons/FilterList";
 import CalendarSwitcher from "./ClanedarSwitcher";
+import { useCallback, useMemo, useState } from "react";
 import ThinArrowRightIcon from "../icons/ThinArrowRight";
 import { useCalendarStore } from "../store/calendarStore";
 import type { VIEW_OPTIONS_TYPES } from "../types/globalTypes";
 
 const Header = () => {
-  const { goToToday, viewDate, calendarType, goToNextMonth, goToPrevMonth, setViewType } = useCalendarStore();
+  const viewDate = useCalendarStore((state) => state.viewDate);
+  const calendarType = useCalendarStore((state) => state.calendarType);
+  const setViewType = useCalendarStore((state) => state.setViewType);
+  const goToToday = useCalendarStore((state) => state.goToToday);
+  const goToNextMonth = useCalendarStore((state) => state.goToNextMonth);
+  const goToPrevMonth = useCalendarStore((state) => state.goToPrevMonth);
   const [showViewOptions, setShowViewOptions] = useState<boolean>(false);
   const [selectedView, setSelectedView] = useState<VIEW_OPTIONS_TYPES>(VIEW_OPTIONS[0]);
 
-  console.log("HEADER is rendering with date:", viewDate.format());
-
-  const handleShowViewOptions = () => {
+  const handleShowViewOptions = useCallback(() => {
     setShowViewOptions((prev) => !prev);
-  };
+  }, []);
+
+  const handleClick = useCallback(
+    (option: VIEW_OPTIONS_TYPES) => {
+      setSelectedView(option);
+      setViewType(option.value);
+      setShowViewOptions(false);
+    },
+    [setViewType]
+  );
+
+  const getDate = useMemo(() => {
+    if (calendarType === "gregorian") {
+      return viewDate.format("DD MMMM YYYY");
+    }
+    if (calendarType === "persian") {
+      return viewDate.format("YYYY - MMMM - DD");
+    }
+  }, [viewDate, calendarType]);
 
   return (
     <div className="w-full flex justify-between items-center mx-auto relative py-2">
@@ -48,11 +69,7 @@ const Header = () => {
             <li
               key={index}
               role="button"
-              onClick={() => {
-                setSelectedView(option);
-                setViewType(option.value);
-                setShowViewOptions(false);
-              }}
+              onClick={() => handleClick(option)}
               className={clsx(
                 option.value === selectedView.value ? "bg-gray-300/60" : "",
                 `inline-flex items-center p-2 pointer hover:bg-gray-300/50 transition-colors my-[2px] rounded-sm`
@@ -74,13 +91,9 @@ const Header = () => {
             <ThinArrowRightIcon strokeWidth={2} />
           </IconWrapper>
           <p className="flex gap-2 font-bold tracking-wider text-xl mx-2">
-            {calendarType === "gregorian" ? (
-              viewDate.format("DD MMMM YYYY")
-            ) : (
-              <span dir="rtl" className="font-semibold text-2xl">
-                {viewDate.format("YYYY - MMMM - DD")}
-              </span>
-            )}
+            <span dir={calendarType === "gregorian" ? "ltr" : "rtl"} className="font-semibold text-2xl">
+              {getDate}
+            </span>
           </p>
           <IconWrapper
             onClickFn={goToNextMonth}

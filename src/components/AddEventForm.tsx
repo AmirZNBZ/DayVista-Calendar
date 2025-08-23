@@ -40,8 +40,8 @@ export default function AddEventForm({
   const [allDayChecked, setAllDayChecked] = useState(initialEvent?.allDay || false);
   const [description, setDescription] = useState(initialEvent?.description || "");
 
-  console.log("fromDate", fromDate);
-  console.log("toDate", toDate);
+  // console.log("fromDate", fromDate);
+  // console.log("toDate", toDate);
 
   const [fromDateTime, setFromDateTime] = useState<DateObject | null>(
     initialEvent ? new DateObject({ date: initialEvent.start, calendar, locale }) : fromDate || null

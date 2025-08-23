@@ -1,4 +1,5 @@
 import type React from "react";
+import type DateObject from "react-date-object";
 
 export type ViewType = "Month" | "Week" | "Day" | "WeekList";
 export interface VIEW_OPTIONS_TYPES {
@@ -21,8 +22,8 @@ export type CalendarEvent = {
   title: string;
   allDay?: boolean;
   // color: EventColor;
-  end: string; //
-  start: string; // ✨ فرمت ISO: "2025-08-22T10:30:00.000Z"
+  end: DateObject; //
+  start: DateObject; // ✨ فرمت ISO: "2025-08-22T10:30:00.000Z"
   color?: string;
   description?: string;
 };
