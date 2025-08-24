@@ -8,7 +8,7 @@ import { useGetCalendar } from "../hooks/useGetCalendar";
 import WeekEvent from "./weekView/WeekEvent";
 import { useEventStore } from "../store/eventStore";
 import type { CalendarEvent } from "../types/globalTypes";
-import { calculateAllDayEventLayout } from "../utils/weekEventLayout";
+import { calculateAllDayEventLayout, calculateTimedEventLayout } from "../utils/weekEventLayout";
 
 const MAX_VISIBLE_EVENTS = 2;
 
@@ -201,10 +201,62 @@ const WeekView = () => {
                     const eventEndUnix = new DateObject({ date: event.end }).toUnix();
                     return eventStartUnix < dayEndUnix && eventEndUnix > dayStartUnix;
                   });
+
+                  const { layoutTimedEvents, moreIndicators } = calculateTimedEventLayout(
+                    timedEventsForDay,
+                    day
+                  );
+
                   return (
                     <div key={day.toUnix()} className="relative grid grid-rows-48 border-l border-gray-200">
-                      {timedEventsForDay.map((event) => (
-                        <WeekEvent day={day} key={event.id} event={event} />
+                      {layoutTimedEvents.map((event) => (
+                        <WeekEvent key={event.id} event={event} />
+                      ))}
+
+                      {moreIndicators.map((indicator) => (
+                        <React.Fragment key={indicator.id}>
+                          <Modal.Open opens={indicator.id} stopClickPropagation={true}>
+                            <div
+                              className="absolute p-1.5 rounded-md text-sm cursor-pointer bg-gray-100 hover:bg-gray-200 border border-gray-300 flex items-center justify-center"
+                              style={{
+                                top: `${indicator.top}px`,
+                                height: `${indicator.height}px`,
+                                left: indicator.left,
+                                width: indicator.width,
+                              }}
+                            >
+                              <p className="font-semibold text-gray-700">+{indicator.count} more</p>
+                            </div>
+                          </Modal.Open>
+                          <Modal.Window name={indicator.id}>
+                            <div className="p-4 bg-white rounded-lg shadow-lg w-96">
+                              <h3 className="text-lg font-bold mb-3">Events for {day.format("DD MMMM")}</h3>
+                              <ul className="max-h-80 overflow-y-auto">
+                                {indicator.events.map((event: CalendarEvent) => (
+                                  <li
+                                    key={event.id}
+                                    className="mb-2 p-2 rounded flex items-center"
+                                    style={{ backgroundColor: `${event.color}20` }}
+                                  >
+                                    <div
+                                      className="w-2 h-2 rounded-full mr-3"
+                                      style={{ backgroundColor: event.color }}
+                                    ></div>
+                                    <div>
+                                      <p className="font-semibold" style={{ color: event.color }}>
+                                        {event.title}
+                                      </p>
+                                      <p className="text-xs text-gray-600">
+                                        {new DateObject(event.start).format("hh:mm A")} -{" "}
+                                        {new DateObject(event.end).format("hh:mm A")}
+                                      </p>
+                                    </div>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          </Modal.Window>
+                        </React.Fragment>
                       ))}
 
                       {timeSlots.map((slotIndex) => {
