@@ -15,7 +15,6 @@ export const calculateAllDayEventLayout = (
     return { layoutEvents: [], dailyEventCounts: Array(7).fill(0), maxRows: 0 };
   }
 
-  // ۱. رویدادها را بر اساس تاریخ شروع و سپس طولانی بودن مرتب می‌کنیم
   const sortedEvents = [...allDayEvents].sort((a, b) => {
     const startA = new DateObject(a.start).toUnix();
     const startB = new DateObject(b.start).toUnix();
@@ -24,11 +23,10 @@ export const calculateAllDayEventLayout = (
     }
     const durationA = new DateObject(a.end).toUnix() - startA;
     const durationB = new DateObject(b.end).toUnix() - startB;
-    return durationB - durationA; // طولانی‌ترین اول
+    return durationB - durationA;
   });
 
   const layoutEvents: LayoutEvent[] = [];
-  // ماتریسی برای نگهداری ردیف‌های اشغال شده در هر روز
   const lanes: (string | null)[][] = Array(7)
     .fill(0)
     .map(() => []);
@@ -37,7 +35,6 @@ export const calculateAllDayEventLayout = (
     const eventStart = new DateObject(event.start);
     const eventEnd = new DateObject(event.end);
 
-    // ۲. ستون شروع و پایان رویداد را در هفته پیدا می‌کنیم
     let startDayIndex = weekDays.findIndex(
       (day) =>
         day.set({ hour: 0, minute: 0, second: 0 }).toUnix() ===
@@ -61,7 +58,6 @@ export const calculateAllDayEventLayout = (
 
     if (startDayIndex === -1 || endDayIndex === -1 || startDayIndex > endDayIndex) return;
 
-    // ۳. اولین ردیف خالی را برای این رویداد پیدا می‌کنیم
     let rowIndex = 0;
     while (true) {
       let isLaneFree = true;
@@ -72,12 +68,11 @@ export const calculateAllDayEventLayout = (
         }
       }
       if (isLaneFree) {
-        break; // ردیف خالی پیدا شد
+        break;
       }
       rowIndex++;
     }
 
-    // ۴. ردیف پیدا شده را برای این رویداد اشغال می‌کنیم
     for (let i = startDayIndex; i <= endDayIndex; i++) {
       lanes[i][rowIndex] = event.id;
     }
