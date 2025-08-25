@@ -1,5 +1,4 @@
 import DateObject from "react-date-object";
-import { useGetCalendar } from "../hooks/useGetCalendar";
 import { useWeekView } from "../hooks/useWeekView";
 import { useEventStore } from "../store/eventStore";
 import type { CalendarEvent } from "../types/globalTypes";
@@ -8,7 +7,6 @@ import TimeGrid from "./weekView/TimeGrid";
 import WeekViewHeader from "./weekView/WeekViewHeader";
 
 const WeekView = () => {
-  const { calendar } = useGetCalendar();
   const { events: allEvents, updateEvent, deleteEvent } = useEventStore();
   const { weekDays, timeSlots, hours, handleAddEvent, allDayEvents, timedEvents } = useWeekView();
 
@@ -60,8 +58,6 @@ const WeekView = () => {
       allDay: true,
     });
   };
-
-  console.log(calendar);
 
   return (
     <Modal>

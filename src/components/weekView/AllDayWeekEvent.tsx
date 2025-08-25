@@ -62,7 +62,7 @@ const AllDayWeekEvent = ({ event }: AllDayWeekEventProps) => {
             borderColor: event.color,
             opacity: isDragging ? 0.5 : 1,
           }}
-          className="absolute w-full my-1 p-1 text-xs truncate rounded border-l-4 cursor-grab active:cursor-grabbing"
+          className="absolute w-23/24 m-1 p-1 text-xs truncate rounded border-l-4 cursor-grab active:cursor-grabbing"
         >
           <p className="font-semibold" style={{ color: event.color }}>
             {event.title} -{" "}
