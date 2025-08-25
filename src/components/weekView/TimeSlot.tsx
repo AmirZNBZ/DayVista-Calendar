@@ -56,12 +56,10 @@ const TimeSlot = ({ day, slotIndex, onEventDrop, children }: TimeSlotProps) => {
       className={clsx(
         "h-8 relative group",
         !isHalfHour && "border-t border-gray-200",
-        // هایلایت کردن خانه بر اساس وضعیت drag
         (isOver || shouldHighlight) && "bg-green-100/70"
       )}
     >
-      {/* {isHalfHour && <div className="border-t border-dashed border-gray-300" />} */}
-      {/* children همون Modal.Open هست که از قبل داشتیم */}
+      {isHalfHour && <div className="border-t border-gray-300" />}
       {children}
     </div>
   );
