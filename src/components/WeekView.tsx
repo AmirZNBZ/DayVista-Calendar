@@ -1,28 +1,73 @@
 import clsx from "clsx";
-import Modal from "./modal/Modal";
 import React, { useMemo } from "react";
-import AddEventForm from "./AddEventForm";
 import DateObject from "react-date-object";
-import { useWeekView } from "../hooks/useWeekView";
 import { useGetCalendar } from "../hooks/useGetCalendar";
-import WeekEvent from "./weekView/WeekEvent";
+import { useWeekView } from "../hooks/useWeekView";
 import { useEventStore } from "../store/eventStore";
 import type { CalendarEvent } from "../types/globalTypes";
 import { calculateAllDayEventLayout, calculateTimedEventLayout } from "../utils/weekEventLayout";
+import AddEventForm from "./AddEventForm";
+import Modal from "./modal/Modal";
+import AllDayCell from "./weekView/AllDayCell";
+import AllDayWeekEvent from "./weekView/AllDayWeekEvent";
+import TimeSlot from "./weekView/TimeSlot";
+import WeekEvent from "./weekView/WeekEvent";
 
 const MAX_VISIBLE_EVENTS = 2;
 
 const WeekView = () => {
-  const eventStore = useEventStore();
+  const { events: allEvents, updateEvent, deleteEvent } = useEventStore();
+
   const { calendar } = useGetCalendar();
   const { weekDays, timeSlots, hours, handleAddEvent, allDayEvents, timedEvents } = useWeekView();
 
-  const updateEvent = (event: CalendarEvent) => {
-    eventStore.updateEvent(event);
+  const handleUpdateEvent = (event: CalendarEvent) => {
+    updateEvent(event);
   };
 
-  const deleteEvent = (id: CalendarEvent["id"]) => {
-    eventStore.deleteEvent(id);
+  const handleDeleteEvent = (id: CalendarEvent["id"]) => {
+    deleteEvent(id);
+  };
+
+  const handleTimedEventDrop = (eventId: string, newStartDate: DateObject) => {
+    const event = allEvents.find((e) => e.id === eventId);
+    if (!event) return;
+
+    const start = new DateObject(event.start);
+    const end = new DateObject(event.end);
+    const duration = end.toUnix() - start.toUnix();
+
+    const newEndDate = new DateObject(newStartDate).add(duration, "seconds");
+
+    updateEvent({
+      ...event,
+      start: newStartDate,
+      end: newEndDate,
+    });
+  };
+
+  const handleAllDayEventDrop = (eventId: string, newDay: DateObject) => {
+    const event = allEvents.find((e) => e.id === eventId);
+    if (!event) return;
+
+    const originalStart = new DateObject(event.start);
+    const end = new DateObject(event.end);
+    const duration = end.toUnix() - originalStart.toUnix();
+
+    const newStartDate = new DateObject(newDay).set({
+      hour: originalStart.hour,
+      minute: originalStart.minute,
+      second: originalStart.second,
+    });
+
+    const newEndDate = new DateObject(newStartDate).add(duration, "seconds");
+
+    updateEvent({
+      ...event,
+      start: newStartDate,
+      end: newEndDate,
+      allDay: true,
+    });
   };
 
   console.log(calendar);
@@ -51,7 +96,7 @@ const WeekView = () => {
                 ))}
               </div>
             </div>
-            <div className="grid grid-cols-[auto_1fr] border-t border-gray-200">
+            <div className="grid grid-cols-[auto_1fr] border-t border-gray-200 min-h-20">
               <div
                 className={`${timelineColumnWidth} flex items-start justify-center pt-2 border-r border-gray-200`}
               >
@@ -62,59 +107,24 @@ const WeekView = () => {
                 style={{ minHeight: `${Math.min(maxRows, MAX_VISIBLE_EVENTS + 1) * 28 + 10}px` }}
               >
                 {weekDays.map((day) => (
-                  <React.Fragment key={day.toUnix()}>
-                    <Modal.Open opens={day.toString()} stopClickPropagation={true}>
-                      <div key={day.toUnix()} className="border-l border-gray-200 p-1 h-full" />
-                    </Modal.Open>
-                    <Modal.Window name={day.toString()}>
-                      <AddEventForm
-                        onAdd={handleAddEvent}
-                        initialEvent={{
-                          allDay: true,
-                          start: day.format("YYYY/MM/DD - HH:mm"),
-                          end: new DateObject(day.set({ hour: 23, minute: 59, second: 59 })),
-                        }}
-                      />
-                    </Modal.Window>
-                  </React.Fragment>
+                  <AllDayCell
+                    key={day.toUnix()}
+                    day={day}
+                    onEventDrop={handleAllDayEventDrop}
+                    onAddEvent={handleAddEvent}
+                  />
                 ))}
                 {layoutEvents
                   .filter((event) => event.rowIndex < MAX_VISIBLE_EVENTS)
                   .map((event) => (
-                    <React.Fragment key={event.id}>
-                      <Modal.Open opens={event.id} stopClickPropagation={true}>
-                        <div
-                          style={{
-                            gridColumn: `${event.startDayIndex + 1} / span ${event.span}`,
-                            top: `${event.rowIndex * 28}px`, // استفاده از rowIndex
-                            backgroundColor: `${event.color}20`,
-                            borderColor: event.color,
-                          }}
-                          className="absolute w-full my-1 p-1 text-xs truncate rounded border-l-4 cursor-grab active:cursor-grabbing select-none"
-                        >
-                          <p className="font-semibold" style={{ color: event.color }}>
-                            {event.title}
-                          </p>
-                        </div>
-                      </Modal.Open>
-                      <Modal.Window name={event.id}>
-                        <AddEventForm
-                          toDate={event.end}
-                          onAdd={updateEvent}
-                          initialEvent={event}
-                          fromDate={event.start}
-                          onDelete={deleteEvent}
-                        />
-                      </Modal.Window>
-                    </React.Fragment>
+                    <AllDayWeekEvent key={event.id} event={event} />
                   ))}
 
                 {dailyEventCounts.map((count, dayIndex) => {
                   if (count > MAX_VISIBLE_EVENTS) {
                     const day = weekDays[dayIndex];
-                    const modalName = `more-${day.toUnix()}`; // یک نام منحصر به فرد برای مودال هر روز
+                    const modalName = `more-${day.toUnix()}`;
 
-                    // رویدادهای مربوط به این روز را برای نمایش در مودال فیلتر می‌کنیم
                     const eventsForThisModal = allDayEvents.filter((event) => {
                       const eventStartUnix = new DateObject(event.start)
                         .set({ hour: 0, minute: 0, second: 0 })
@@ -147,15 +157,35 @@ const WeekView = () => {
                             <h3 className="text-lg font-bold mb-3">رویدادهای {day.format("DD MMMM")}</h3>
                             <ul className="max-h-60 overflow-y-auto">
                               {eventsForThisModal.map((event) => (
-                                <li
-                                  key={event.id}
-                                  className="mb-2 p-2 rounded"
-                                  style={{ backgroundColor: `${event.color}20` }}
-                                >
-                                  <p className="font-semibold" style={{ color: event.color }}>
-                                    {event.title}
-                                  </p>
-                                </li>
+                                <Modal>
+                                  <Modal.Open
+                                    stopClickPropagation={true}
+                                    opens={`all-daily-event-more-${event.id}`}
+                                  >
+                                    <li
+                                      key={event.id}
+                                      className="mb-2 p-2 rounded"
+                                      style={{ backgroundColor: `${event.color}20` }}
+                                    >
+                                      <p className="font-semibold" style={{ color: event.color }}>
+                                        {event.title}
+                                      </p>
+                                      <p className="text-xs text-gray-600">
+                                        {new DateObject(event.start).format("hh:mm A")} -{" "}
+                                        {new DateObject(event.end).format("hh:mm A")}
+                                      </p>
+                                    </li>
+                                  </Modal.Open>
+                                  <Modal.Window name={`all-daily-event-more-${event.id}`}>
+                                    <AddEventForm
+                                      toDate={event.end}
+                                      onAdd={handleUpdateEvent}
+                                      initialEvent={event}
+                                      fromDate={event.start}
+                                      onDelete={handleDeleteEvent}
+                                    />
+                                  </Modal.Window>
+                                </Modal>
                               ))}
                             </ul>
                           </div>
@@ -217,7 +247,7 @@ const WeekView = () => {
                         <React.Fragment key={indicator.id}>
                           <Modal.Open opens={indicator.id} stopClickPropagation={true}>
                             <div
-                              className="absolute p-1.5 rounded-md text-sm cursor-pointer bg-gray-100 hover:bg-gray-200 border border-gray-300 flex items-center justify-center"
+                              className="absolute p-1.5 rounded-md text-sm cursor-pointer bg-gray-100 hover:bg-gray-200 border border-gray-300 flex items-center justify-center z-10"
                               style={{
                                 top: `${indicator.top}px`,
                                 height: `${indicator.height}px`,
@@ -229,36 +259,51 @@ const WeekView = () => {
                             </div>
                           </Modal.Open>
                           <Modal.Window name={indicator.id}>
-                            <div className="p-4 bg-white rounded-lg shadow-lg w-96">
+                            <div className="p-4 bg-white rounded-lg w-96">
                               <h3 className="text-lg font-bold mb-3">Events for {day.format("DD MMMM")}</h3>
                               <ul className="max-h-80 overflow-y-auto">
                                 {indicator.events.map((event: CalendarEvent) => (
-                                  <li
-                                    key={event.id}
-                                    className="mb-2 p-2 rounded flex items-center"
-                                    style={{ backgroundColor: `${event.color}20` }}
-                                  >
-                                    <div
-                                      className="w-2 h-2 rounded-full mr-3"
-                                      style={{ backgroundColor: event.color }}
-                                    ></div>
-                                    <div>
-                                      <p className="font-semibold" style={{ color: event.color }}>
-                                        {event.title}
-                                      </p>
-                                      <p className="text-xs text-gray-600">
-                                        {new DateObject(event.start).format("hh:mm A")} -{" "}
-                                        {new DateObject(event.end).format("hh:mm A")}
-                                      </p>
-                                    </div>
-                                  </li>
+                                  <Modal key={event.id}>
+                                    <Modal.Open
+                                      stopClickPropagation={true}
+                                      opens={`more-open-event-modal-${event.id}`}
+                                    >
+                                      <li
+                                        key={event.id}
+                                        className="mb-2 p-2 rounded flex items-center pointer"
+                                        style={{ backgroundColor: `${event.color}20` }}
+                                      >
+                                        <div
+                                          className="w-2 h-2 rounded-full mr-3"
+                                          style={{ backgroundColor: event.color }}
+                                        ></div>
+                                        <div>
+                                          <p className="font-semibold" style={{ color: event.color }}>
+                                            {event.title}
+                                          </p>
+                                          <p className="text-xs text-gray-600">
+                                            {new DateObject(event.start).format("hh:mm A")} -{" "}
+                                            {new DateObject(event.end).format("hh:mm A")}
+                                          </p>
+                                        </div>
+                                      </li>
+                                    </Modal.Open>
+                                    <Modal.Window name={`more-open-event-modal-${event.id}`}>
+                                      <AddEventForm
+                                        toDate={event.end}
+                                        onAdd={handleUpdateEvent}
+                                        initialEvent={event}
+                                        fromDate={event.start}
+                                        onDelete={handleDeleteEvent}
+                                      />
+                                    </Modal.Window>
+                                  </Modal>
                                 ))}
                               </ul>
                             </div>
                           </Modal.Window>
                         </React.Fragment>
                       ))}
-
                       {timeSlots.map((slotIndex) => {
                         const hour = Math.floor(slotIndex / 2);
                         const minute = (slotIndex % 2) * 30;
@@ -268,16 +313,18 @@ const WeekView = () => {
                         const modalId = `${day.toUnix()}-${slotIndex}`;
                         return (
                           <React.Fragment key={modalId}>
-                            <Modal.Open stopClickPropagation opens={modalId}>
-                              <div
-                                className={clsx(
-                                  "h-8 hover:bg-amber-500/10 cursor-pointer group",
-                                  !isHalfHour && "border-t border-gray-200"
-                                )}
-                              >
-                                {isHalfHour && <div className="border-t border-dashed border-gray-300" />}
-                              </div>
-                            </Modal.Open>
+                            <TimeSlot day={day} slotIndex={slotIndex} onEventDrop={handleTimedEventDrop}>
+                              <Modal.Open stopClickPropagation opens={modalId}>
+                                <div
+                                  className={clsx(
+                                    "h-8 hover:bg-amber-500/10 cursor-pointer group",
+                                    !isHalfHour && "border-t border-gray-200"
+                                  )}
+                                >
+                                  {isHalfHour && <div className="border-t border-dashed border-gray-300" />}
+                                </div>
+                              </Modal.Open>
+                            </TimeSlot>
                             <Modal.Window name={modalId}>
                               <AddEventForm
                                 onAdd={handleAddEvent}

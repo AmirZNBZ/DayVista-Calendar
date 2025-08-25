@@ -1,22 +1,21 @@
-import DateObject from "react-date-object";
+import React, { useEffect } from "react";
+import { useDrag } from "react-dnd";
+import { getEmptyImage } from "react-dnd-html5-backend";
 import { useEventStore } from "../../store/eventStore";
 import type { CalendarEvent } from "../../types/globalTypes";
-import AddEventForm from "../AddEventForm";
+import DateObject from "react-date-object";
 import Modal from "../modal/Modal";
-import { useDrag } from "react-dnd";
-import { useEffect } from "react";
-import { getEmptyImage } from "react-dnd-html5-backend";
+import AddEventForm from "../AddEventForm";
 
-interface WeekEventProps {
+interface AllDayWeekEventProps {
   event: CalendarEvent & {
-    top: number;
-    height: number;
-    left: string;
-    width: string;
+    startDayIndex: number;
+    span: number;
+    rowIndex: number;
   };
 }
 
-const WeekEvent = ({ event }: WeekEventProps) => {
+const AllDayWeekEvent = ({ event }: AllDayWeekEventProps) => {
   const eventStore = useEventStore();
   const setDraggedEventInfo = useEventStore((state) => state.setDraggedEventInfo);
   const setDropTargetDate = useEventStore((state) => state.setDropTargetDate);
@@ -28,32 +27,23 @@ const WeekEvent = ({ event }: WeekEventProps) => {
       const end = new DateObject(event.end);
       const duration = end.toUnix() - start.toUnix();
       setDraggedEventInfo({ id: event.id, duration, allDay: !!event.allDay });
-
       return { ...event };
     },
-    collect: (monitor) => ({
-      isDragging: !!monitor.isDragging(),
-    }),
     end: () => {
       setDraggedEventInfo(null);
       setDropTargetDate(null);
     },
+    collect: (monitor) => ({
+      isDragging: !!monitor.isDragging(),
+    }),
   });
 
   useEffect(() => {
     preview(getEmptyImage(), { captureDraggingState: true });
   }, [preview]);
 
-  const eventStyle = {
-    top: `${event.top}px`,
-    height: `${event.height}px`,
-    left: event.left,
-    width: event.width,
-    opacity: isDragging ? 0.5 : 1,
-  };
-
-  const updateEvent = (event: CalendarEvent) => {
-    eventStore.updateEvent(event);
+  const updateEvent = (updatedEvent: CalendarEvent) => {
+    eventStore.updateEvent(updatedEvent);
   };
 
   const deleteEvent = (id: CalendarEvent["id"]) => {
@@ -61,18 +51,24 @@ const WeekEvent = ({ event }: WeekEventProps) => {
   };
 
   return (
-    <>
+    <React.Fragment key={event.id}>
       <Modal.Open opens={event.id} stopClickPropagation={true}>
         <div
           ref={dragEventRef as unknown as React.Ref<HTMLDivElement>}
-          style={{ ...eventStyle, backgroundColor: `${event.color}20`, borderColor: event.color, zIndex: 10 }}
-          className="absolute p-1.5 overflow-hidden rounded-md text-sm border-l-2 cursor-grab active:cursor-grabbing"
+          style={{
+            gridColumn: `${event.startDayIndex + 1} / span ${event.span}`,
+            top: `${event.rowIndex * 28}px`,
+            backgroundColor: `${event.color}20`,
+            borderColor: event.color,
+            opacity: isDragging ? 0.5 : 1,
+          }}
+          className="absolute w-full my-1 p-1 text-xs truncate rounded border-l-4 cursor-grab active:cursor-grabbing"
         >
           <p className="font-semibold" style={{ color: event.color }}>
-            {event.title}
-          </p>
-          <p className="text-xs text-gray-600 mt-3">
-            {new DateObject(event.start).format("hh:mm A")} - {new DateObject(event.end).format("hh:mm A")}
+            {event.title} -{" "}
+            <span className="text-xs text-gray-600">
+              {new DateObject(event.start).format("hh:mm A")} - {new DateObject(event.end).format("hh:mm A")}
+            </span>
           </p>
         </div>
       </Modal.Open>
@@ -85,8 +81,8 @@ const WeekEvent = ({ event }: WeekEventProps) => {
           onDelete={deleteEvent}
         />
       </Modal.Window>
-    </>
+    </React.Fragment>
   );
 };
 
-export default WeekEvent;
+export default AllDayWeekEvent;

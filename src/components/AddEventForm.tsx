@@ -73,13 +73,13 @@ export default function AddEventForm({
 
       if (isNowChecked) {
         if (fromDateTime) {
-          const endOfDay = new DateObject(fromDateTime).set("hour", 23).set("minute", 59).set("second", 59);
+          const endOfDay = new DateObject(fromDateTime).set({ hour: 23, minute: 59, second: 59 });
 
           setToDateTime(endOfDay);
         }
       } else {
-        setToDateTime(toDate || null);
-        setFromDateTime(fromDate || null);
+        setToDateTime(toDate || new DateObject());
+        setFromDateTime(fromDate || new DateObject());
       }
 
       return isNowChecked;

@@ -101,12 +101,12 @@ interface TimedLayoutEvent extends CalendarEvent {
   width: string;
 }
 
-const MAX_VISIBLE_TIMED_EVENTS = 2; // حداکثر تعداد رویدادهای قابل نمایش کنار هم
+const MAX_VISIBLE_TIMED_EVENTS = 2;
 
-// ✅ کل این تابع را جایگزین نسخه قبلی کن
 export const calculateTimedEventLayout = (
   eventsForDay: CalendarEvent[],
   day: DateObject
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): { layoutTimedEvents: TimedLayoutEvent[]; moreIndicators: any[] } => {
   if (!eventsForDay.length) return { layoutTimedEvents: [], moreIndicators: [] };
 
@@ -168,10 +168,11 @@ export const calculateTimedEventLayout = (
   }
 
   const layoutTimedEvents: TimedLayoutEvent[] = [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const moreIndicators: any[] = [];
 
   // مرحله چهارم: پردازش هر گروه و تصمیم‌گیری برای نمایش عادی یا دکمه "more"
-  groups.forEach((group, groupIndex) => {
+  groups.forEach((group) => {
     group.sort((a, b) => a.startUnix - b.startUnix || b.endUnix - a.endUnix);
 
     // تخصیص ستون به هر رویداد در گروه
@@ -207,31 +208,61 @@ export const calculateTimedEventLayout = (
         layoutTimedEvents.push({ ...event, width: `calc(${width}% - 4px)`, left: `${left}%` });
       });
     } else {
-      // حالت فشرده: نمایش ۲ رویداد و دکمه "more"
       const width = 100 / MAX_VISIBLE_TIMED_EVENTS;
 
-      // نمایش رویدادهای ستون اول
       group
         .filter((e) => e.columnIndex === 0)
         .forEach((event) => {
           layoutTimedEvents.push({ ...event, width: `calc(${width}% - 4px)`, left: `0%` });
         });
 
-      // پیدا کردن اولین رویداد برای نمایش دکمه "more" در ستون دوم
-      const hiddenEvents = group.filter((e) => e.columnIndex >= 1);
-      const firstHiddenEvent = hiddenEvents.sort((a, b) => a.startUnix - b.startUnix)[0];
+      const hiddenEvents = group.filter((e) => e.columnIndex >= 1).sort((a, b) => a.startUnix - b.startUnix);
 
-      if (firstHiddenEvent) {
+      if (!hiddenEvents.length) return;
+      const finalizeBlock = (block: { startUnix: number; endUnix: number }) => {
+        const allEventsInBlockTime = group.filter(
+          (e) => e.startUnix < block.endUnix && e.endUnix > block.startUnix
+        );
+
+        const hiddenEventsInBlock = allEventsInBlockTime.filter((e) => e.columnIndex >= 1);
+
+        if (hiddenEventsInBlock.length === 0) return;
+
+        const visualStartDate = new DateObject({
+          date: block.startUnix * 1000,
+          calendar: day.calendar,
+          locale: day.locale,
+        });
+        const top = visualStartDate.hour * PIXEL_PER_HOURS + visualStartDate.minute * PIXEL_PER_MINUTES;
+        const height = ((block.endUnix - block.startUnix) / 60) * PIXEL_PER_MINUTES;
+
         moreIndicators.push({
-          id: `more-${day.toUnix()}-${groupIndex}`,
-          top: firstHiddenEvent.top,
-          height: firstHiddenEvent.height,
+          id: `more-${block.startUnix}`,
+          top: top,
+          height: Math.max(height, PIXEL_PER_MINUTES * 15),
           left: `${width}%`,
           width: `calc(${width}% - 4px)`,
-          count: hiddenEvents.length,
-          events: group.sort((a, b) => a.startUnix - b.startUnix), // همه رویدادها برای مودال
+          count: hiddenEventsInBlock.length,
+          events: hiddenEventsInBlock.sort((a, b) => a.startUnix - b.startUnix),
         });
+      };
+
+      let currentBlock = {
+        startUnix: hiddenEvents[0].startUnix,
+        endUnix: hiddenEvents[0].endUnix,
+      };
+
+      for (let i = 1; i < hiddenEvents.length; i++) {
+        const event = hiddenEvents[i];
+        if (event.startUnix < currentBlock.endUnix) {
+          currentBlock.endUnix = Math.max(currentBlock.endUnix, event.endUnix);
+        } else {
+          finalizeBlock(currentBlock);
+          currentBlock = { startUnix: event.startUnix, endUnix: event.endUnix };
+        }
       }
+
+      finalizeBlock(currentBlock);
     }
   });
 
