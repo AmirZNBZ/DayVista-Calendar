@@ -43,20 +43,25 @@ const Header = () => {
 
   return (
     <div className="w-full flex justify-between items-center mx-auto relative py-2">
-      <section id="viewOptionsButton" className="relative flex justify-between items-center max-w-4/12">
-        <div
-          onClick={handleShowViewOptions}
-          className="inline-flex items-center min-w-1/5 py-1 px-4 rounded-md pointer min-w- hover:bg-gray-300/50 transition-colors"
-        >
-          <IconWrapper className="mr-1">{selectedView.icon}</IconWrapper>
-          <p className="font-semibold text-lg">{selectedView.label}</p>
-          <IconWrapper className="ml-2">
-            <ArrowDownIcon
-              className={clsx(
-                showViewOptions ? "rotate-180 transition duration-500" : "transition duration-500"
-              )}
-            />
-          </IconWrapper>
+      <section
+        id="viewOptionsButton"
+        className="relative space-x-1 flex justify-between items-center max-w-4/12 "
+      >
+        <div className="group">
+          <div
+            onClick={handleShowViewOptions}
+            className="inline-flex items-center min-w-1/5 py-1 px-4 rounded-md pointer ml-1 hover:bg-zinc-400/30 group-hover:text-zinc-700/80 transition-colors"
+          >
+            <IconWrapper className="mr-1">{selectedView.icon}</IconWrapper>
+            <p className="font-semibold text-lg">{selectedView.label}</p>
+            <IconWrapper className="ml-2">
+              <ArrowDownIcon
+                className={clsx(
+                  showViewOptions ? "rotate-180 transition duration-500" : "transition duration-500"
+                )}
+              />
+            </IconWrapper>
+          </div>
         </div>
         <CalendarSwitcher />
         <ul
@@ -72,7 +77,7 @@ const Header = () => {
               onClick={() => handleClick(option)}
               className={clsx(
                 option.value === selectedView.value ? "bg-gray-300/60" : "",
-                `inline-flex items-center p-2 pointer hover:bg-gray-300/50 transition-colors my-[2px] rounded-sm`
+                `inline-flex items-center p-2 pointer hover:bg-gray-300/50 hover:scale-105 transition-colors my-[2px] rounded-sm`
               )}
             >
               {option.icon && <IconWrapper className="mr-2">{option.icon}</IconWrapper>}

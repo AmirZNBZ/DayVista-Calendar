@@ -5,7 +5,7 @@ import { CustomDragLayer } from "./components/CustomDragLayer";
 function App() {
   return (
     <DndProvider backend={HTML5Backend}>
-      <DayVistaCalendar />;
+      <DayVistaCalendar />
       <CustomDragLayer />
     </DndProvider>
   );
