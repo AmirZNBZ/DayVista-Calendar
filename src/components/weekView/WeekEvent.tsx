@@ -68,7 +68,7 @@ const WeekEvent = ({ event }: WeekEventProps) => {
           className="absolute p-1.5 overflow-hidden rounded-md text-sm border-l-2 cursor-grab active:cursor-grabbing"
         >
           <p
-            className="font-semibold"
+            className="font-semibold cursor-move w-fit"
             style={{ color: event.color }}
             ref={dragEventRef as unknown as React.Ref<HTMLParagraphElement>}
           >

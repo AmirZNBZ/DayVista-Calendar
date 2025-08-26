@@ -46,7 +46,7 @@ export const calculateAllDayEventLayout = (
     let endDayIndex = weekDays.findIndex(
       (day) =>
         // TODO : eventEnd.set({ hour: 0, minute: 0, second: 0 }).toUnix()
-        getDayBoundary(day, "start").toUnix() === getDayBoundary(eventStart, "start").toUnix()
+        getDayBoundary(day, "start").toUnix() === getDayBoundary(eventEnd, "start").toUnix()
     );
     if (endDayIndex === -1 && eventEnd.toUnix() > getDayBoundary(weekDays[6], "end").toUnix()) {
       endDayIndex = 6;

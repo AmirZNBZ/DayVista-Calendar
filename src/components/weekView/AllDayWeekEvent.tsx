@@ -64,7 +64,7 @@ const AllDayWeekEvent = ({ event }: AllDayWeekEventProps) => {
           className="absolute w-23/24 m-1 p-1 text-xs truncate rounded border-l-4 cursor-grab active:cursor-grabbing"
         >
           <p
-            className="font-semibold w-fit"
+            className="font-semibold w-fit cursor-move"
             style={{ color: event.color }}
             ref={dragEventRef as unknown as React.Ref<HTMLParagraphElement>}
           >
