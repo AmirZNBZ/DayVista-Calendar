@@ -13,8 +13,8 @@ export interface CalendarState {
   calendarType: CalendarType;
   viewDate: DateObject;
   setCalendarType: (type: CalendarType) => void;
-  goToNextMonth: () => void;
-  goToPrevMonth: () => void;
+  goToNext: () => void;
+  goToPrev: () => void;
   goToToday: () => void;
   viewType: ViewType;
   setViewType: (view: ViewType) => void;
@@ -40,33 +40,30 @@ export const useCalendarStore = create<CalendarState>()(
       });
     },
 
-    goToNextMonth: () => {
+    goToNext: () => {
       const { viewType } = get();
-      switch (viewType) {
-        case "Month":
-          set((state) => ({ viewDate: new DateObject(state.viewDate).add(1, "month") }));
-          break;
-        case "Week":
-          set((state) => ({ viewDate: new DateObject(state.viewDate).add(7, "day") }));
-          break;
-        default:
-          break;
-      }
+
+      const calculateByViewType = {
+        Month: () => set((state) => ({ viewDate: new DateObject(state.viewDate).add(1, "month") })),
+        Week: () => set((state) => ({ viewDate: new DateObject(state.viewDate).add(7, "day") })),
+        Day: () => set((state) => ({ viewDate: new DateObject(state.viewDate).add(1, "day") })),
+        WeekList: () => calculateByViewType.Week(),
+      };
+
+      return calculateByViewType[viewType]();
     },
 
-    goToPrevMonth: () => {
+    goToPrev: () => {
       const { viewType } = get();
-      switch (viewType) {
-        case "Month":
-          set((state) => ({ viewDate: new DateObject(state.viewDate).subtract(1, "month") }));
-          break;
-        case "Week":
-          set((state) => ({ viewDate: new DateObject(state.viewDate).subtract(7, "day") }));
-          break;
 
-        default:
-          break;
-      }
+      const calculateByViewType = {
+        Month: () => set((state) => ({ viewDate: new DateObject(state.viewDate).subtract(1, "month") })),
+        Week: () => set((state) => ({ viewDate: new DateObject(state.viewDate).subtract(7, "day") })),
+        Day: () => set((state) => ({ viewDate: new DateObject(state.viewDate).subtract(1, "day") })),
+        WeekList: () => calculateByViewType.Week(),
+      };
+
+      return calculateByViewType[viewType]();
     },
 
     goToToday: () => {

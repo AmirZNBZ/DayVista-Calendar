@@ -63,7 +63,7 @@ export const CustomDragLayer = () => {
   const durationInDays = Math.round(durationInSeconds / 86400) + 1;
 
   const previewWidth =
-    viewType === "Month" ? `${durationInDays * (100 / 8.5)}%` : `${durationInDays * (100 / 15.5)}%`;
+    viewType === "Month" ? `${durationInDays * (100 / 12.5)}%` : `${durationInDays * (100 / 15.5)}%`;
 
   return (
     <div style={layerStyles}>

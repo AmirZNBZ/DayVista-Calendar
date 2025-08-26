@@ -4,18 +4,19 @@ import { VIEW_OPTIONS } from "../constants";
 import ArrowDownIcon from "../icons/ArrowDown";
 import FilterListIcon from "../icons/FilterList";
 import CalendarSwitcher from "./ClanedarSwitcher";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import ThinArrowRightIcon from "../icons/ThinArrowRight";
 import { useCalendarStore } from "../store/calendarStore";
 import type { VIEW_OPTIONS_TYPES } from "../types/globalTypes";
+import { useGetDate } from "../hooks/useGetDate";
 
 const Header = () => {
-  const viewDate = useCalendarStore((state) => state.viewDate);
-  const calendarType = useCalendarStore((state) => state.calendarType);
-  const setViewType = useCalendarStore((state) => state.setViewType);
+  const getDate = useGetDate();
   const goToToday = useCalendarStore((state) => state.goToToday);
-  const goToNextMonth = useCalendarStore((state) => state.goToNextMonth);
-  const goToPrevMonth = useCalendarStore((state) => state.goToPrevMonth);
+  const goToNextMonth = useCalendarStore((state) => state.goToNext);
+  const goToPrevMonth = useCalendarStore((state) => state.goToPrev);
+  const setViewType = useCalendarStore((state) => state.setViewType);
+  const calendarType = useCalendarStore((state) => state.calendarType);
   const [showViewOptions, setShowViewOptions] = useState<boolean>(false);
   const [selectedView, setSelectedView] = useState<VIEW_OPTIONS_TYPES>(VIEW_OPTIONS[0]);
 
@@ -32,15 +33,6 @@ const Header = () => {
     [setViewType]
   );
 
-  const getDate = useMemo(() => {
-    if (calendarType === "gregorian") {
-      return viewDate.format("MMMM YYYY");
-    }
-    if (calendarType === "persian") {
-      return viewDate.format("YYYY - MMMM");
-    }
-  }, [viewDate, calendarType]);
-
   return (
     <div className="w-full flex justify-between items-center mx-auto relative py-2">
       <section
@@ -53,7 +45,7 @@ const Header = () => {
             className="inline-flex items-center min-w-1/5 py-1 px-4 rounded-md pointer ml-1 hover:bg-zinc-400/30 group-hover:text-zinc-700/80 transition-colors"
           >
             <IconWrapper className="mr-1">{selectedView.icon}</IconWrapper>
-            <p className="font-semibold text-lg">{selectedView.label}</p>
+            <p className="font-semibold text-lg select-none">{selectedView.label}</p>
             <IconWrapper className="ml-2">
               <ArrowDownIcon
                 className={clsx(
@@ -95,7 +87,7 @@ const Header = () => {
           >
             <ThinArrowRightIcon strokeWidth={2} />
           </IconWrapper>
-          <p className="flex gap-2 font-bold tracking-wider text-xl mx-2">
+          <p className="flex gap-2 font-bold tracking-wider text-xl mx-2 select-none">
             <span dir={calendarType === "gregorian" ? "ltr" : "rtl"} className="font-semibold text-2xl">
               {getDate}
             </span>
@@ -116,7 +108,7 @@ const Header = () => {
             onClick={() => goToToday()}
             className="mr-2 bg-orange-400 hover:bg-orange-500 px-4 py-1 rounded-md pointer"
           >
-            <p className="font-semibold text-white/90 text-md">Today</p>
+            <p className="font-semibold text-white/90 text-md select-none">Today</p>
           </button>
           <IconWrapper
             onClickFn={() => console.log("filter Icon")}
