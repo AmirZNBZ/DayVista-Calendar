@@ -2,6 +2,7 @@ import React from "react";
 import { useDragLayer, type XYCoord } from "react-dnd";
 import DateObject from "react-date-object";
 import { getDayBoundary } from "../helpers/getDayBoundary";
+import { useCalendarStore } from "../store/calendarStore";
 
 const layerStyles: React.CSSProperties = {
   top: 0,
@@ -35,6 +36,7 @@ function getItemStyles(
 }
 
 export const CustomDragLayer = () => {
+  const { viewType } = useCalendarStore();
   const { item, itemType, isDragging, currentPointerOffset, initialPointerOffset, initialSourceOffset } =
     useDragLayer((monitor) => ({
       item: monitor.getItem(),
@@ -60,7 +62,8 @@ export const CustomDragLayer = () => {
 
   const durationInDays = Math.round(durationInSeconds / 86400) + 1;
 
-  const previewWidth = `${durationInDays * (100 / 8.5)}%`;
+  const previewWidth =
+    viewType === "Month" ? `${durationInDays * (100 / 8.5)}%` : `${durationInDays * (100 / 15.5)}%`;
 
   return (
     <div style={layerStyles}>
