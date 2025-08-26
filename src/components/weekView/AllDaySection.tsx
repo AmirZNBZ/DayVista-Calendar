@@ -5,6 +5,7 @@ import AddEventForm from "../AddEventForm";
 import Modal from "../modal/Modal";
 import AllDayCell from "./AllDayCell";
 import AllDayWeekEvent from "./AllDayWeekEvent";
+import { getDayBoundary } from "../../helpers/getDayBoundary";
 
 const MAX_VISIBLE_EVENTS = 2;
 
@@ -62,13 +63,13 @@ const AllDaySection = ({
           const modalName = `more-allday-${day.toUnix()}`;
 
           const eventsForThisModal = allDayEvents.filter((event) => {
-            const eventStartUnix = new DateObject(event.start)
-              .set({ hour: 0, minute: 0, second: 0 })
-              .toUnix();
-            const eventEndUnix = new DateObject(event.end).set({ hour: 23, minute: 59, second: 59 }).toUnix();
+            const eventStartUnix = getDayBoundary(event.start, "start").toUnix();
+
+            const eventEndUnix = getDayBoundary(event.end, "end").toUnix();
+
             return (
-              day.set({ hour: 0, minute: 0, second: 0 }).toUnix() >= eventStartUnix &&
-              day.set({ hour: 0, minute: 0, second: 0 }).toUnix() <= eventEndUnix
+              getDayBoundary(day, "start").toUnix() >= eventStartUnix &&
+              getDayBoundary(day, "start").toUnix() <= eventEndUnix
             );
           });
 

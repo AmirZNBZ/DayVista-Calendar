@@ -1,5 +1,6 @@
 import DateObject from "react-date-object";
 import type { CalendarEvent } from "../types/globalTypes";
+import { getDayBoundary } from "../helpers/getDayBoundary";
 
 interface LayoutEvent extends CalendarEvent {
   startDayIndex: number;
@@ -36,9 +37,7 @@ export const calculateAllDayEventLayout = (
     const eventEnd = new DateObject(event.end);
 
     let startDayIndex = weekDays.findIndex(
-      (day) =>
-        day.set({ hour: 0, minute: 0, second: 0 }).toUnix() ===
-        eventStart.set({ hour: 0, minute: 0, second: 0 }).toUnix()
+      (day) => getDayBoundary(day, "start").toUnix() === getDayBoundary(eventStart, "start").toUnix()
     );
     if (startDayIndex === -1 && eventStart.toUnix() < weekDays[0].toUnix()) {
       startDayIndex = 0;
@@ -46,13 +45,10 @@ export const calculateAllDayEventLayout = (
 
     let endDayIndex = weekDays.findIndex(
       (day) =>
-        day.set({ hour: 0, minute: 0, second: 0 }).toUnix() ===
-        eventEnd.set({ hour: 0, minute: 0, second: 0 }).toUnix()
+        // TODO : eventEnd.set({ hour: 0, minute: 0, second: 0 }).toUnix()
+        getDayBoundary(day, "start").toUnix() === getDayBoundary(eventStart, "start").toUnix()
     );
-    if (
-      endDayIndex === -1 &&
-      eventEnd.toUnix() > weekDays[6].set({ hour: 23, minute: 59, second: 59 }).toUnix()
-    ) {
+    if (endDayIndex === -1 && eventEnd.toUnix() > getDayBoundary(weekDays[6], "end").toUnix()) {
       endDayIndex = 6;
     }
 
@@ -110,8 +106,8 @@ export const calculateTimedEventLayout = (
 ): { layoutTimedEvents: TimedLayoutEvent[]; moreIndicators: any[] } => {
   if (!eventsForDay.length) return { layoutTimedEvents: [], moreIndicators: [] };
 
-  const dayStartUnix = day.set({ hour: 0, minute: 0, second: 0 }).toUnix();
-  const dayEndUnix = day.set({ hour: 23, minute: 59, second: 59 }).toUnix();
+  const dayStartUnix = getDayBoundary(day, "start").toUnix();
+  const dayEndUnix = getDayBoundary(day, "end").toUnix();
 
   // مرحله اول: پیش‌پردازش رویدادها (مشابه قبل)
   const processedEvents = eventsForDay.map((event, index) => {

@@ -6,6 +6,7 @@ import Modal from "../modal/Modal";
 import AddEventForm from "../AddEventForm";
 import WeekEvent from "./WeekEvent";
 import TimeSlot from "./TimeSlot";
+import { getDayBoundary } from "../../helpers/getDayBoundary";
 
 interface DayColumnProps {
   day: DateObject;
@@ -28,8 +29,8 @@ const DayColumn = ({
 }: DayColumnProps) => {
   // ۱. رویدادهای مربوط به این روز خاص را فیلتر می‌کنیم
   const timedEventsForDay = useMemo(() => {
-    const dayStartUnix = day.set({ hour: 0, minute: 0, second: 0 }).toUnix();
-    const dayEndUnix = day.set({ hour: 23, minute: 59, second: 59 }).toUnix();
+    const dayStartUnix = getDayBoundary(day, "start").toUnix();
+    const dayEndUnix = getDayBoundary(day, "end").toUnix();
     return timedEvents.filter((event) => {
       const eventStartUnix = new DateObject(event.start).toUnix();
       const eventEndUnix = new DateObject(event.end).toUnix();
@@ -74,10 +75,7 @@ const DayColumn = ({
                         className="mb-2 p-2 rounded flex items-center cursor-pointer"
                         style={{ backgroundColor: `${event.color}20` }}
                       >
-                        <div
-                          className="w-2 h-2 rounded-full mr-3"
-                          style={{ backgroundColor: event.color }}
-                        ></div>
+                        <div className="w-2 h-2 rounded-full mr-3" style={{ backgroundColor: event.color }} />
                         <div>
                           <p className="font-semibold" style={{ color: event.color }}>
                             {event.title}
@@ -92,9 +90,9 @@ const DayColumn = ({
                     <Modal.Window name={`more-open-event-modal-${event.id}`}>
                       <AddEventForm
                         toDate={event.end}
-                        onAdd={handleUpdateEvent}
                         initialEvent={event}
                         fromDate={event.start}
+                        onAdd={handleUpdateEvent}
                         onDelete={handleDeleteEvent}
                       />
                     </Modal.Window>

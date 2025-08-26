@@ -5,11 +5,11 @@ import DateObject from "react-date-object";
 import { useEventStore } from "../../store/eventStore";
 import Modal from "../modal/Modal";
 import AddEventForm from "../AddEventForm";
+import { getDayBoundary } from "../../helpers/getDayBoundary";
 
 interface AllDayCellProps {
   day: DateObject;
   onEventDrop: (eventId: string, newDay: DateObject) => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onAddEvent: (event: any) => void;
 }
 
@@ -34,8 +34,8 @@ const AllDayCell = ({ day, onEventDrop, onAddEvent }: AllDayCellProps) => {
 
     if (!draggedEventInfo || !dropTargetDate) return false;
 
-    const currentCellDate = new DateObject(day).set({ hour: 0, minute: 0, second: 0 });
-    const dropTargetDay = new DateObject(dropTargetDate).set({ hour: 0, minute: 0, second: 0 });
+    const currentCellDate = getDayBoundary(day, "start");
+    const dropTargetDay = getDayBoundary(dropTargetDate, "start");
 
     // اگر رویداد در حال کشیدن از نوع all-day است، بازه زمانی را هایلایت کن
     if (draggedEventInfo.allDay) {
@@ -68,7 +68,7 @@ const AllDayCell = ({ day, onEventDrop, onAddEvent }: AllDayCellProps) => {
           initialEvent={{
             allDay: true,
             start: day.format("YYYY/MM/DD - HH:mm"),
-            end: new DateObject(day.set({ hour: 23, minute: 59, second: 59 })),
+            end: getDayBoundary(day, "end"),
           }}
         />
       </Modal.Window>

@@ -64,11 +64,14 @@ const WeekEvent = ({ event }: WeekEventProps) => {
     <>
       <Modal.Open opens={event.id} stopClickPropagation={true}>
         <div
-          ref={dragEventRef as unknown as React.Ref<HTMLDivElement>}
           style={{ ...eventStyle, backgroundColor: `${event.color}20`, borderColor: event.color, zIndex: 10 }}
           className="absolute p-1.5 overflow-hidden rounded-md text-sm border-l-2 cursor-grab active:cursor-grabbing"
         >
-          <p className="font-semibold" style={{ color: event.color }}>
+          <p
+            className="font-semibold"
+            style={{ color: event.color }}
+            ref={dragEventRef as unknown as React.Ref<HTMLParagraphElement>}
+          >
             {event.title}
           </p>
           <p className="text-xs text-gray-600 mt-3">

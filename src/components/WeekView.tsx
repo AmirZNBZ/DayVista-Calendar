@@ -61,7 +61,7 @@ const WeekView = () => {
 
   return (
     <Modal>
-      <div className="flex flex-col h-[85vh] bg-white text-gray-700">
+      <div className="flex flex-col h-[85vh] bg-transparent text-gray-700 ">
         <WeekViewHeader
           weekDays={weekDays}
           allDayEvents={allDayEvents}

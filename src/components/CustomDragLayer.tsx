@@ -1,6 +1,7 @@
 import React from "react";
 import { useDragLayer, type XYCoord } from "react-dnd";
 import DateObject from "react-date-object";
+import { getDayBoundary } from "../helpers/getDayBoundary";
 
 const layerStyles: React.CSSProperties = {
   top: 0,
@@ -51,10 +52,11 @@ export const CustomDragLayer = () => {
   const startDate = new DateObject(item.start);
   const endDate = new DateObject(item.end);
 
-  const startDay = new DateObject(startDate).set({ hour: 0, minute: 0, second: 0 });
-  const endDay = new DateObject(endDate).set({ hour: 0, minute: 0, second: 0 });
+  const startDay = getDayBoundary(startDate, "start").toUnix();
+  // TODO : new DateObject(endDate).set({ hour: 0, minute: 0, second: 0 }); Changed to 23:59:59
+  const endDay = getDayBoundary(endDate, "end").toUnix();
 
-  const durationInSeconds = endDay.toUnix() - startDay.toUnix();
+  const durationInSeconds = endDay - startDay;
 
   const durationInDays = Math.round(durationInSeconds / 86400) + 1;
 

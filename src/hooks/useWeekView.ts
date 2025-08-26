@@ -3,6 +3,7 @@ import DateObject from "react-date-object";
 import { useEventStore } from "../store/eventStore";
 import { useCalendarStore } from "../store/calendarStore";
 import type { CalendarEvent } from "../types/globalTypes";
+import { getDayBoundary } from "../helpers/getDayBoundary";
 
 export const useWeekView = () => {
   const { addEvent, events } = useEventStore();
@@ -25,8 +26,8 @@ export const useWeekView = () => {
   const { timedEvents, allDayEvents } = useMemo(() => {
     if (!weekDays.length) return { timedEvents: [], allDayEvents: [] };
 
-    const weekStartUnix = new DateObject(weekDays[0]).set({ hour: 0o0, minute: 0o0, second: 0o0 }).toUnix();
-    const weekEndUnix = new DateObject(weekDays[6]).set({ hour: 23, minute: 59, second: 59 }).toUnix();
+    const weekStartUnix = getDayBoundary(weekDays[0], "start").toUnix();
+    const weekEndUnix = getDayBoundary(weekDays[6], "end").toUnix();
     const eventsInWeek = events.filter((event) => {
       const eventStartUnix = new DateObject({ date: event.start }).toUnix();
       const eventEndUnix = new DateObject({ date: event.end }).toUnix();

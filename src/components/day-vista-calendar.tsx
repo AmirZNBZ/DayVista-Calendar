@@ -9,7 +9,7 @@ const DayVistaCalendar = () => {
   const { viewType } = useCalendarStore();
   console.log("events:", events);
   return (
-    <main className="max-w-7xl w-full mx-auto my-16">
+    <main className="max-w-7xl w-full mx-auto my-16 bg-[#fffbfbf8]">
       <div className="mx-2 border border-gray-200 shadow-1xl rounded-md">
         <Header />
         {viewType === "Month" && <MonthView />}

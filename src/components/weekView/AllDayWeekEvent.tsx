@@ -54,7 +54,6 @@ const AllDayWeekEvent = ({ event }: AllDayWeekEventProps) => {
     <React.Fragment key={event.id}>
       <Modal.Open opens={event.id} stopClickPropagation={true}>
         <div
-          ref={dragEventRef as unknown as React.Ref<HTMLDivElement>}
           style={{
             gridColumn: `${event.startDayIndex + 1} / span ${event.span}`,
             top: `${event.rowIndex * 28}px`,
@@ -64,7 +63,11 @@ const AllDayWeekEvent = ({ event }: AllDayWeekEventProps) => {
           }}
           className="absolute w-23/24 m-1 p-1 text-xs truncate rounded border-l-4 cursor-grab active:cursor-grabbing"
         >
-          <p className="font-semibold" style={{ color: event.color }}>
+          <p
+            className="font-semibold w-fit"
+            style={{ color: event.color }}
+            ref={dragEventRef as unknown as React.Ref<HTMLParagraphElement>}
+          >
             {event.title} -{" "}
             <span className="text-xs text-gray-600">
               {new DateObject(event.start).format("hh:mm A")} - {new DateObject(event.end).format("hh:mm A")}

@@ -11,6 +11,7 @@ import TrashIcon from "../icons/Trash";
 import { useCalendarStore } from "../store/calendarStore";
 import type { CalendarEvent } from "../types/globalTypes";
 import IconWrapper from "./IconWrapper";
+import { getDayBoundary } from "../helpers/getDayBoundary";
 
 interface Props {
   toDate?: DateObject;
@@ -40,8 +41,6 @@ export default function AddEventForm({
   const [allDayChecked, setAllDayChecked] = useState(initialEvent?.allDay || false);
   const [description, setDescription] = useState(initialEvent?.description || "");
 
-  // console.log("fromDate", fromDate);
-  // console.log("toDate", toDate);
 
   const [fromDateTime, setFromDateTime] = useState<DateObject | null>(
     initialEvent ? new DateObject({ date: initialEvent.start, calendar, locale }) : fromDate || null
@@ -73,8 +72,9 @@ export default function AddEventForm({
 
       if (isNowChecked) {
         if (fromDateTime) {
-          const endOfDay = new DateObject(fromDateTime).set({ hour: 23, minute: 59, second: 59 });
-
+          const startOfDay = getDayBoundary(fromDateTime, "start");
+          const endOfDay = getDayBoundary(fromDateTime, "end");
+          setFromDateTime(startOfDay);
           setToDateTime(endOfDay);
         }
       } else {

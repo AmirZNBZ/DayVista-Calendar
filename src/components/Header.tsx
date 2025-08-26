@@ -34,10 +34,10 @@ const Header = () => {
 
   const getDate = useMemo(() => {
     if (calendarType === "gregorian") {
-      return viewDate.format("DD MMMM YYYY");
+      return viewDate.format("MMMM YYYY");
     }
     if (calendarType === "persian") {
-      return viewDate.format("YYYY - MMMM - DD");
+      return viewDate.format("YYYY - MMMM");
     }
   }, [viewDate, calendarType]);
 
