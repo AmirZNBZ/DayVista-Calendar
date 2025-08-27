@@ -100,8 +100,8 @@ const EditEvent = ({
         "absolute left-0 right-0 overflow-hidden cursor-pointer text-ellipsis whitespace-nowrap px-1 text-sm text-white hover:cursor-grab active:cursor-grabbing",
         isStart && "rounded-l-md",
         isEnd && "rounded-r-md",
-        !isStart && "ml-[-8px]",
-        !isEnd && "mr-[-1px]"
+        !isStart && "ms-[-8px]",
+        !isEnd && "me-[-1px]"
       )}
     >
       {isStart && <span className="font-bold">{event.title}</span>}

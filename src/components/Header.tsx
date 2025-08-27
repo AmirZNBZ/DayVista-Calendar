@@ -4,7 +4,7 @@ import { VIEW_OPTIONS } from "../constants";
 import ArrowDownIcon from "../icons/ArrowDown";
 import FilterListIcon from "../icons/FilterList";
 import CalendarSwitcher from "./ClanedarSwitcher";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ThinArrowRightIcon from "../icons/ThinArrowRight";
 import { useCalendarStore } from "../store/calendarStore";
 import type { VIEW_OPTIONS_TYPES } from "../types/globalTypes";
@@ -32,6 +32,10 @@ const Header = () => {
     },
     [setViewType]
   );
+
+  useEffect(() => {
+    setViewType(VIEW_OPTIONS[0].value);
+  }, [setViewType]);
 
   return (
     <div className="w-full flex justify-between items-center mx-auto relative py-2">
