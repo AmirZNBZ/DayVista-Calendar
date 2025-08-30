@@ -12,5 +12,27 @@
   "calendarType": {
     "gregorian": "Gregorian",
     "persian": "Persian"
-  }
+  },
+  "daysOfWeek": {
+    "sun": "Sun",
+    "mon": "Mon",
+    "tue": "Tue",
+    "wed": "Wed",
+    "thu": "Thu",
+    "fri": "Fri",
+    "sat": "Sat"
+  },
+  "more": "more",
+  "events": "Events",
+  "event": "Event",
+  "day": "Day",
+  "eventTitle": "Event title",
+  "description": "Description",
+  "allDay": "All Day",
+  "cancel": "Cancel",
+  "update": "UPDATE",
+  "add": "Add",
+  "from": "From",
+  "to": "To",
+  "today":"Today"
 }

@@ -56,9 +56,8 @@ const CalendarCell = ({ cellData, events, onEventDrop, onAddEvent, calendar, loc
   return (
     <React.Fragment key={key}>
       <td
-        ref={dropRef as unknown as React.Ref<HTMLTableCellElement>}
-        key={key}
         data-no-outside-click
+        ref={dropRef as unknown as React.Ref<HTMLTableCellElement>}
         className={clsx(
           "active:bg-purple-200/20 select-none min-h-28 h-28 p-1 align-top border border-orange-400",
           isOver && "bg-green-100/70",

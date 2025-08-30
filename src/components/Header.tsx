@@ -3,21 +3,21 @@ import IconWrapper from "./IconWrapper";
 import { VIEW_OPTIONS } from "../constants";
 import ArrowDownIcon from "../icons/ArrowDown";
 import FilterListIcon from "../icons/FilterList";
-import CalendarSwitcher from "./ClanedarSwitcher";
+import { useGetDate } from "../hooks/useGetDate";
+import CalendarSwitcher from "./CalendarSwitcher";
 import { useCallback, useEffect, useState } from "react";
 import ThinArrowRightIcon from "../icons/ThinArrowRight";
 import { useCalendarStore } from "../store/calendarStore";
-import type { VIEW_OPTIONS_TYPES } from "../types/globalTypes";
-import { useGetDate } from "../hooks/useGetDate";
 import { useTranslations } from "../hooks/useTranslations";
 import CalendarLocaleSwitcher from "./CalendarLocaleSwitcher";
+import type { VIEW_OPTIONS_TYPES } from "../types/globalTypes";
 
 const Header = () => {
-  const { t } = useTranslations();
   const getDate = useGetDate();
-  const goToToday = useCalendarStore((state) => state.goToToday);
+  const { t } = useTranslations();
   const goToNext = useCalendarStore((state) => state.goToNext);
   const goToPrev = useCalendarStore((state) => state.goToPrev);
+  const goToToday = useCalendarStore((state) => state.goToToday);
   const setViewType = useCalendarStore((state) => state.setViewType);
   const calendarType = useCalendarStore((state) => state.calendarType);
   const [showViewOptions, setShowViewOptions] = useState<boolean>(false);
@@ -116,7 +116,7 @@ const Header = () => {
             onClick={() => goToToday()}
             className="mr-2 bg-orange-400 hover:bg-orange-500 px-4 py-1 rounded-md pointer"
           >
-            <p className="font-semibold text-white/90 text-md select-none">Today</p>
+            <p className="font-semibold text-white/90 text-md select-none">{t("today")}</p>
           </button>
           <IconWrapper
             onClickFn={() => console.log("filter Icon")}
