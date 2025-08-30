@@ -5,10 +5,10 @@ import AgendaViewIcon from "../icons/AgendaView";
 import type { VIEW_OPTIONS_TYPES } from "../types/globalTypes";
 
 export const VIEW_OPTIONS: VIEW_OPTIONS_TYPES[] = [
-  { value: "Month", label: "Month", icon: <MonthViewIcon /> },
-  { value: "Week", label: "Week", icon: <WeekViewIcon /> },
-  { value: "Day", label: "Day", icon: <DayViewIcon /> },
-  { value: "WeekList", label: "Agenda", icon: <AgendaViewIcon /> },
+  { value: "Month", label: "header.month", icon: <MonthViewIcon /> },
+  { value: "Week", label: "header.week", icon: <WeekViewIcon /> },
+  { value: "Day", label: "header.day", icon: <DayViewIcon /> },
+  { value: "WeekList", label: "header.agenda", icon: <AgendaViewIcon /> },
 ];
 
 export const daysOfWeekEn: string[] = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];

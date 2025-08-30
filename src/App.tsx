@@ -5,13 +5,13 @@ import { CustomDragLayer } from "./components/CustomDragLayer";
 import { useCalendarStore } from "./store/calendarStore";
 import { useEffect } from "react";
 function App() {
-  const calendarType = useCalendarStore((state) => state.calendarType);
+  const locale = useCalendarStore((state) => state.locale);
 
   useEffect(() => {
-    const direction = calendarType === "persian" ? "rtl" : "ltr";
+    const direction = locale === "fa" ? "rtl" : "ltr";
     document.documentElement.dir = direction;
-    document.documentElement.lang = calendarType === "persian" ? "fa" : "en"; // برای SEO و Accessibility بهتر
-  }, [calendarType]);
+    document.documentElement.lang = locale === "fa" ? "fa" : "en"; // برای SEO و Accessibility بهتر
+  }, [locale]);
 
   return (
     <DndProvider backend={HTML5Backend}>

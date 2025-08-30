@@ -9,8 +9,11 @@ import ThinArrowRightIcon from "../icons/ThinArrowRight";
 import { useCalendarStore } from "../store/calendarStore";
 import type { VIEW_OPTIONS_TYPES } from "../types/globalTypes";
 import { useGetDate } from "../hooks/useGetDate";
+import { useTranslations } from "../hooks/useTranslations";
+import CalendarLocaleSwitcher from "./CalendarLocaleSwitcher";
 
 const Header = () => {
+  const { t } = useTranslations();
   const getDate = useGetDate();
   const goToToday = useCalendarStore((state) => state.goToToday);
   const goToNext = useCalendarStore((state) => state.goToNext);
@@ -49,7 +52,7 @@ const Header = () => {
             className="inline-flex items-center min-w-1/5 py-1 px-4 rounded-md pointer ml-1 hover:bg-zinc-400/30 group-hover:text-zinc-700/80 transition-colors"
           >
             <IconWrapper className="mr-1">{selectedView.icon}</IconWrapper>
-            <p className="font-semibold text-lg select-none">{selectedView.label}</p>
+            <p className="font-semibold text-lg select-none">{t(selectedView.label)}</p>
             <IconWrapper className="ml-2">
               <ArrowDownIcon
                 className={clsx(
@@ -60,6 +63,7 @@ const Header = () => {
           </div>
         </div>
         <CalendarSwitcher />
+        <CalendarLocaleSwitcher />
         <ul
           className={clsx(
             showViewOptions ? "flex transition duration-500" : "hidden",
@@ -77,7 +81,7 @@ const Header = () => {
               )}
             >
               {option.icon && <IconWrapper className="mr-2">{option.icon}</IconWrapper>}
-              <p className="text-md">{option.label}</p>
+              <p className="text-md">{t(option.label)}</p>
             </li>
           ))}
         </ul>

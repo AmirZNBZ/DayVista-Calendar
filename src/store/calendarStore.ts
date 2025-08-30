@@ -7,21 +7,25 @@ import gregorian_en from "react-date-object/locales/gregorian_en";
 import type { ViewType } from "../types/globalTypes";
 import { devtools } from "zustand/middleware";
 
+type Locale = "en" | "fa";
 type CalendarType = "gregorian" | "persian";
 
 export interface CalendarState {
-  calendarType: CalendarType;
+  locale: Locale;
+  viewType: ViewType;
   viewDate: DateObject;
-  setCalendarType: (type: CalendarType) => void;
+  calendarType: CalendarType;
   goToNext: () => void;
   goToPrev: () => void;
   goToToday: () => void;
-  viewType: ViewType;
+  setLocale: (lang: Locale) => void;
   setViewType: (view: ViewType) => void;
+  setCalendarType: (type: CalendarType) => void;
 }
 
 export const useCalendarStore = create<CalendarState>()(
   devtools((set, get) => ({
+    locale: "en",
     viewType: "Month",
     calendarType: "gregorian",
     viewDate: new DateObject({ calendar: gregorian, locale: gregorian_en }),
@@ -86,6 +90,14 @@ export const useCalendarStore = create<CalendarState>()(
       set({
         viewType: type,
         viewDate: todayDate,
+      });
+    },
+    setLocale: (lang) => {
+      const { locale } = get();
+      if (locale === lang) return;
+
+      set({
+        locale: lang,
       });
     },
   }))

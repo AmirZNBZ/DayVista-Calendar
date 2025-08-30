@@ -1,6 +1,8 @@
+import { useTranslations } from "../hooks/useTranslations";
 import { useCalendarStore } from "../store/calendarStore";
 
 export default function CalendarSwitcher() {
+  const { t } = useTranslations();
   const { calendarType, setCalendarType } = useCalendarStore();
 
   return (
@@ -9,13 +11,13 @@ export default function CalendarSwitcher() {
         onClick={() => setCalendarType("persian")}
         className={`px-3 py-1 text-sm rounded-md pointer ${calendarType === "persian" ? "bg-white shadow" : ""}`}
       >
-        شمسی
+        {t("calendarType.persian")}
       </button>
       <button
         onClick={() => setCalendarType("gregorian")}
         className={`px-3 py-1 text-sm rounded-md pointer ${calendarType === "gregorian" ? "bg-white shadow" : ""}`}
       >
-        میلادی
+        {t("calendarType.gregorian")}
       </button>
     </div>
   );

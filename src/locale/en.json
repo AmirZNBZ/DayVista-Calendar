@@ -1,0 +1,16 @@
+{
+  "header": {
+    "month": "Month",
+    "week": "Week",
+    "day": "Day",
+    "agenda": "Agenda"
+  },
+  "locales": {
+    "en": "English",
+    "fa": "Persian"
+  },
+  "calendarType": {
+    "gregorian": "Gregorian",
+    "persian": "Persian"
+  }
+}

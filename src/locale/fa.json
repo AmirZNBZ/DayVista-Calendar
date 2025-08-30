@@ -1,0 +1,16 @@
+{
+  "header": {
+    "month": "ماه",
+    "week": "هفته",
+    "day": "روز",
+    "agenda": "کلی"
+  },
+  "locales": {
+    "en": "انگلیسی",
+    "fa": "فارسی"
+  },
+  "calendarType": {
+    "gregorian": "میلادی",
+    "persian": "شمسی"
+  }
+}

@@ -1,9 +1,11 @@
 import type React from "react";
+import faJson from "../locale/fa.json";
+import enJson from "../locale/en.json";
 import type DateObject from "react-date-object";
 
 export type ViewType = "Month" | "Week" | "Day" | "WeekList";
 export interface VIEW_OPTIONS_TYPES {
-  label: string;
+  label: DictionaryKeys;
   value: ViewType;
   icon: React.ReactNode;
 }
@@ -33,3 +35,27 @@ export interface EventSegment extends CalendarEvent {
   isEnd: boolean;
   level: number;
 }
+
+export type DotPrefix<T extends string> = T extends "" ? "" : `.${T}`;
+export type DashPrefix<T extends string> = T extends "" ? "" : `-${T}`;
+
+export type DotNestedKeys<T> = (
+  T extends object
+    ? {
+        [K in Exclude<keyof T, symbol>]: `${K}${DotPrefix<DotNestedKeys<T[K]>>}`;
+      }[Exclude<keyof T, symbol>]
+    : ""
+) extends infer D
+  ? Extract<D, string>
+  : never;
+export type DashNestedKeys<T> = (
+  T extends object
+    ? {
+        [K in Exclude<keyof T, symbol>]: `${K}${DashPrefix<DotNestedKeys<T[K]>>}`;
+      }[Exclude<keyof T, symbol>]
+    : ""
+) extends infer D
+  ? Extract<D, string>
+  : never;
+
+export type DictionaryKeys = DotNestedKeys<typeof enJson> | DotNestedKeys<typeof faJson>;
