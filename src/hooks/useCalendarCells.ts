@@ -6,7 +6,7 @@ interface CalendarCell {
   key: number | string;
   dayNumber: number;
   isCurrentMonth: boolean;
-  date: string; // فرمت YYYY-MM-DD
+  date: DateObject; // فرمت YYYY-MM-DD
 }
 
 export const useGenerateCalendarCells = (): CalendarCell[] => {
@@ -32,7 +32,7 @@ export const useGenerateCalendarCells = (): CalendarCell[] => {
       key: dateObj.format("YYYY-MM-DD"),
       dayNumber,
       isCurrentMonth: false,
-      date: dateObj.format("YYYY-MM-DD"),
+      date: dateObj,
     });
   }
 
@@ -43,7 +43,7 @@ export const useGenerateCalendarCells = (): CalendarCell[] => {
       key: dateObj.format("YYYY-MM-DD"),
       dayNumber,
       isCurrentMonth: true,
-      date: dateObj.format("YYYY-MM-DD"),
+      date: dateObj,
     });
   }
 
@@ -58,7 +58,7 @@ export const useGenerateCalendarCells = (): CalendarCell[] => {
       key: dateObj.format("YYYY-MM-DD"),
       dayNumber,
       isCurrentMonth: false,
-      date: dateObj.format("YYYY-MM-DD"),
+      date: dateObj,
     });
   }
 

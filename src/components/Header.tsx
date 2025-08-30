@@ -1,39 +1,63 @@
 import clsx from "clsx";
-import { useState } from "react";
 import IconWrapper from "./IconWrapper";
 import { VIEW_OPTIONS } from "../constants";
 import ArrowDownIcon from "../icons/ArrowDown";
 import FilterListIcon from "../icons/FilterList";
 import CalendarSwitcher from "./ClanedarSwitcher";
+import { useCallback, useEffect, useState } from "react";
 import ThinArrowRightIcon from "../icons/ThinArrowRight";
 import { useCalendarStore } from "../store/calendarStore";
 import type { VIEW_OPTIONS_TYPES } from "../types/globalTypes";
+import { useGetDate } from "../hooks/useGetDate";
 
 const Header = () => {
-  const { goToToday, viewDate, calendarType, goToNextMonth, goToPrevMonth, setViewType } = useCalendarStore();
+  const getDate = useGetDate();
+  const goToToday = useCalendarStore((state) => state.goToToday);
+  const goToNext = useCalendarStore((state) => state.goToNext);
+  const goToPrev = useCalendarStore((state) => state.goToPrev);
+  const setViewType = useCalendarStore((state) => state.setViewType);
+  const calendarType = useCalendarStore((state) => state.calendarType);
   const [showViewOptions, setShowViewOptions] = useState<boolean>(false);
   const [selectedView, setSelectedView] = useState<VIEW_OPTIONS_TYPES>(VIEW_OPTIONS[0]);
 
-  const handleShowViewOptions = () => {
+  const handleShowViewOptions = useCallback(() => {
     setShowViewOptions((prev) => !prev);
-  };
+  }, []);
+
+  const handleClick = useCallback(
+    (option: VIEW_OPTIONS_TYPES) => {
+      setSelectedView(option);
+      setViewType(option.value);
+      setShowViewOptions(false);
+    },
+    [setViewType]
+  );
+
+  useEffect(() => {
+    setViewType(VIEW_OPTIONS[0].value);
+  }, [setViewType]);
 
   return (
     <div className="w-full flex justify-between items-center mx-auto relative py-2">
-      <section id="viewOptionsButton" className="relative flex justify-between items-center max-w-4/12">
-        <div
-          onClick={handleShowViewOptions}
-          className="inline-flex items-center min-w-1/5 py-1 px-4 rounded-md pointer min-w- hover:bg-gray-300/50 transition-colors"
-        >
-          <IconWrapper className="mr-1">{selectedView.icon}</IconWrapper>
-          <p className="font-semibold text-lg">{selectedView.label}</p>
-          <IconWrapper className="ml-2">
-            <ArrowDownIcon
-              className={clsx(
-                showViewOptions ? "rotate-180 transition duration-500" : "transition duration-500"
-              )}
-            />
-          </IconWrapper>
+      <section
+        id="viewOptionsButton"
+        className="relative space-x-1 flex justify-between items-center max-w-4/12 "
+      >
+        <div className="group">
+          <div
+            onClick={handleShowViewOptions}
+            className="inline-flex items-center min-w-1/5 py-1 px-4 rounded-md pointer ml-1 hover:bg-zinc-400/30 group-hover:text-zinc-700/80 transition-colors"
+          >
+            <IconWrapper className="mr-1">{selectedView.icon}</IconWrapper>
+            <p className="font-semibold text-lg select-none">{selectedView.label}</p>
+            <IconWrapper className="ml-2">
+              <ArrowDownIcon
+                className={clsx(
+                  showViewOptions ? "rotate-180 transition duration-500" : "transition duration-500"
+                )}
+              />
+            </IconWrapper>
+          </div>
         </div>
         <CalendarSwitcher />
         <ul
@@ -46,14 +70,10 @@ const Header = () => {
             <li
               key={index}
               role="button"
-              onClick={() => {
-                setSelectedView(option);
-                setViewType(option.value);
-                setShowViewOptions(false);
-              }}
+              onClick={() => handleClick(option)}
               className={clsx(
                 option.value === selectedView.value ? "bg-gray-300/60" : "",
-                `inline-flex items-center p-2 pointer hover:bg-gray-300/50 transition-colors my-[2px] rounded-sm`
+                `inline-flex items-center p-2 pointer hover:bg-gray-300/50 hover:scale-105 transition-colors my-[2px] rounded-sm`
               )}
             >
               {option.icon && <IconWrapper className="mr-2">{option.icon}</IconWrapper>}
@@ -66,23 +86,19 @@ const Header = () => {
       <section id="movementButtons" className="relative max-w-4/12">
         <div className="flex items-center">
           <IconWrapper
-            onClickFn={goToPrevMonth}
-            className="hover:bg-gray-300/30 rounded-full p-2 transform -rotate-180 pointer select-none"
+            onClickFn={goToPrev}
+            className="hover:bg-gray-300/30 rounded-full p-2 transform -rotate-180 rtl:rotate-0 pointer select-none"
           >
             <ThinArrowRightIcon strokeWidth={2} />
           </IconWrapper>
-          <p className="flex gap-2 font-bold tracking-wider text-xl mx-2">
-            {calendarType === "gregorian" ? (
-              viewDate.format("DD MMMM YYYY")
-            ) : (
-              <span dir="rtl" className="font-semibold text-2xl">
-                {viewDate.format("YYYY - MMMM - DD")}
-              </span>
-            )}
+          <p className="flex gap-2 font-bold tracking-wider text-xl mx-2 select-none">
+            <span dir={calendarType === "gregorian" ? "ltr" : "rtl"} className="font-semibold text-2xl">
+              {getDate}
+            </span>
           </p>
           <IconWrapper
-            onClickFn={goToNextMonth}
-            className="hover:bg-gray-300/30 rounded-full p-2 transform pointer select-none"
+            onClickFn={goToNext}
+            className="hover:bg-gray-300/30 rounded-full p-2 transform pointer select-none rtl:-rotate-180"
           >
             <ThinArrowRightIcon strokeWidth={2} />
           </IconWrapper>
@@ -96,7 +112,7 @@ const Header = () => {
             onClick={() => goToToday()}
             className="mr-2 bg-orange-400 hover:bg-orange-500 px-4 py-1 rounded-md pointer"
           >
-            <p className="font-semibold text-white/90 text-md">Today</p>
+            <p className="font-semibold text-white/90 text-md select-none">Today</p>
           </button>
           <IconWrapper
             onClickFn={() => console.log("filter Icon")}

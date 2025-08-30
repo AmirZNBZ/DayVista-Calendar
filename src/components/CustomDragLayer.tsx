@@ -1,6 +1,8 @@
 import React from "react";
 import { useDragLayer, type XYCoord } from "react-dnd";
 import DateObject from "react-date-object";
+import { getDayBoundary } from "../helpers/getDayBoundary";
+import { useCalendarStore } from "../store/calendarStore";
 
 const layerStyles: React.CSSProperties = {
   top: 0,
@@ -21,19 +23,24 @@ function getItemStyles(
     return { display: "none" };
   }
 
-  // محاسبه میزان جابجایی ماوس از نقطه شروع
   const deltaX = currentPointerOffset.x - initialPointerOffset.x;
   const deltaY = currentPointerOffset.y - initialPointerOffset.y;
 
-  // موقعیت نهایی = موقعیت اولیه آیتم + میزان جابجایی ماوس
   const x = initialSourceOffset.x + deltaX;
   const y = initialSourceOffset.y + deltaY;
-  const transform = `translate(${x}px, ${y}px)`;
+
+  let transform = `translate(${x}px, ${y}px)`;
+
+  const isRtl = document.documentElement.dir === "rtl";
+  if (isRtl) {
+    transform += "translateX(-90%)";
+  }
 
   return { transform };
 }
 
 export const CustomDragLayer = () => {
+  const { viewType } = useCalendarStore();
   const { item, itemType, isDragging, currentPointerOffset, initialPointerOffset, initialSourceOffset } =
     useDragLayer((monitor) => ({
       item: monitor.getItem(),
@@ -51,14 +58,16 @@ export const CustomDragLayer = () => {
   const startDate = new DateObject(item.start);
   const endDate = new DateObject(item.end);
 
-  const startDay = new DateObject(startDate).set({ hour: 0, minute: 0, second: 0 });
-  const endDay = new DateObject(endDate).set({ hour: 0, minute: 0, second: 0 });
+  const startDay = getDayBoundary(startDate, "start").toUnix();
+  // TODO : new DateObject(endDate).set({ hour: 0, minute: 0, second: 0 }); Changed to 23:59:59
+  const endDay = getDayBoundary(endDate, "end").toUnix();
 
-  const durationInSeconds = endDay.toUnix() - startDay.toUnix();
+  const durationInSeconds = endDay - startDay;
 
   const durationInDays = Math.round(durationInSeconds / 86400) + 1;
 
-  const previewWidth = `${durationInDays * (100 / 8.5)}%`;
+  const previewWidth =
+    viewType === "Month" ? `${durationInDays * (100 / 12.5)}%` : `${durationInDays * (100 / 15.5)}%`;
 
   return (
     <div style={layerStyles}>

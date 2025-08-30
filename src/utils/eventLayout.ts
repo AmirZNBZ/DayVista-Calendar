@@ -4,11 +4,11 @@ import type { CalendarEvent, EventSegment } from "../types/globalTypes";
 export const processEventsForLayout = (
   locale: Locale,
   events: CalendarEvent[],
-  visibleDays: { date: string }[],
-  calendar: Omit<Calendar, "leapsLength">,
+  visibleDays: { date: DateObject }[],
+  calendar: Omit<Calendar, "leapsLength">
 ): Map<string, EventSegment[]> => {
   const layoutMap = new Map<string, EventSegment[]>();
-  visibleDays.forEach((day) => layoutMap.set(day.date, []));
+  visibleDays.forEach((day) => layoutMap.set(day.date.format("YYYY-MM-DD"), []));
 
   // رویدادها را بر اساس تاریخ شروع مرتب می‌کنیم
   const sortedEvents = [...events].sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());

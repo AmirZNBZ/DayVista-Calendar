@@ -10,7 +10,7 @@ import DateObject, { type Calendar, type Locale } from "react-date-object";
 
 interface CalendarCellProps {
   cellData: {
-    date: string;
+    date: DateObject;
     dayNumber: number;
     key: number | string;
     isCurrentMonth: boolean;
@@ -19,7 +19,7 @@ interface CalendarCellProps {
   events: EventSegment[];
   calendar: Omit<Calendar, "leapsLength">;
   onAddEvent: (event: CalendarEvent) => void;
-  onEventDrop: (eventId: string, newDate: string) => void;
+  onEventDrop: (eventId: string, newDate: DateObject) => void;
 }
 
 const CalendarCell = ({ cellData, events, onEventDrop, onAddEvent, calendar, locale }: CalendarCellProps) => {
@@ -78,7 +78,7 @@ const CalendarCell = ({ cellData, events, onEventDrop, onAddEvent, calendar, loc
         </Modal.Open>
       </td>
       <Modal.Window name={key.toString()}>
-        <AddEventForm fromDate={date || ""} toDate={date || ""} onAdd={onAddEvent} />
+        <AddEventForm fromDate={date} toDate={date} onAdd={onAddEvent} />
       </Modal.Window>
     </React.Fragment>
   );

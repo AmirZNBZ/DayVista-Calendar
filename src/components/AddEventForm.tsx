@@ -11,10 +11,11 @@ import TrashIcon from "../icons/Trash";
 import { useCalendarStore } from "../store/calendarStore";
 import type { CalendarEvent } from "../types/globalTypes";
 import IconWrapper from "./IconWrapper";
+import { getDayBoundary } from "../helpers/getDayBoundary";
 
 interface Props {
-  toDate?: string;
-  fromDate?: string;
+  toDate?: DateObject;
+  fromDate?: DateObject;
   onCloseModal?: () => void;
   initialEvent?: CalendarEvent;
   onDelete?: (id: string) => void;
@@ -32,28 +33,22 @@ export default function AddEventForm({
   initialEvent,
 }: Props) {
   const { calendarType } = useCalendarStore();
-
   const calendar = calendarType === "persian" ? persian : gregorian;
   const locale = calendarType === "persian" ? persian_fa : gregorian_en;
-
-  const getInitialDate = (dateString?: string): DateObject | null => {
-    if (dateString) {
-      return new DateObject({ date: dateString, calendar, locale });
-    }
-    return null;
-  };
 
   const [title, setTitle] = useState(initialEvent?.title || "");
   const [color, setColor] = useState(initialEvent?.color || "#6366f1");
   const [allDayChecked, setAllDayChecked] = useState(initialEvent?.allDay || false);
   const [description, setDescription] = useState(initialEvent?.description || "");
 
+
   const [fromDateTime, setFromDateTime] = useState<DateObject | null>(
-    getInitialDate(initialEvent?.start || fromDate)
+    initialEvent ? new DateObject({ date: initialEvent.start, calendar, locale }) : fromDate || null
   );
   const [toDateTime, setToDateTime] = useState<DateObject | null>(
-    getInitialDate(initialEvent?.end || toDate)
+    initialEvent ? new DateObject({ date: initialEvent.end, calendar, locale }) : toDate || null
   );
+
   const handleSubmit = () => {
     if (!fromDateTime || !toDateTime) return;
 
@@ -77,13 +72,14 @@ export default function AddEventForm({
 
       if (isNowChecked) {
         if (fromDateTime) {
-          const endOfDay = new DateObject(fromDateTime).set("hour", 23).set("minute", 59).set("second", 59);
-
+          const startOfDay = getDayBoundary(fromDateTime, "start");
+          const endOfDay = getDayBoundary(fromDateTime, "end");
+          setFromDateTime(startOfDay);
           setToDateTime(endOfDay);
         }
       } else {
-        setToDateTime(getInitialDate(toDate));
-        setFromDateTime(getInitialDate(fromDate));
+        setToDateTime(toDate || new DateObject());
+        setFromDateTime(fromDate || new DateObject());
       }
 
       return isNowChecked;

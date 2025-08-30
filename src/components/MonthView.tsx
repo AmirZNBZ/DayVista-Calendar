@@ -23,7 +23,7 @@ const MonthView = () => {
           {rows.map((week, rowIdx) => (
             <tr key={rowIdx}>
               {week.map((cell) => {
-                const eventsForThisDay = eventLayout.get(cell.date) || [];
+                const eventsForThisDay = eventLayout.get(cell.date.format("YYYY-MM-DD")) || [];
 
                 return (
                   <CalendarCell
