@@ -1,9 +1,11 @@
 import Modal from "./modal/Modal";
 import CalendarCell from "./CalendarCell";
 import { useMonthView } from "../hooks/useMonthView";
+import { useTranslations } from "../hooks/useTranslations";
 
 const MonthView = () => {
-  const { rows, locale, addEvent, calendar, daysOfWeek, eventLayout, handleEventDrop } = useMonthView();
+  const { t } = useTranslations();
+  const { rows, locale, addEvent, calendar, weekDays, eventLayout, handleEventDrop } = useMonthView();
 
   console.log("rows", rows);
 
@@ -12,9 +14,9 @@ const MonthView = () => {
       <table className="w-full h-full table-fixed">
         <thead>
           <tr>
-            {daysOfWeek.map((day) => (
+            {weekDays.map((day) => (
               <th key={day} className="p-2">
-                {day}
+                {t(day)}
               </th>
             ))}
           </tr>

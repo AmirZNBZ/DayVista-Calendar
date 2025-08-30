@@ -3,6 +3,7 @@ import EditEvent from "./EditEvent";
 import DateObject from "react-date-object";
 import type { Calendar, Locale } from "react-date-object";
 import type { EventSegment } from "../../types/globalTypes";
+import { useTranslations } from "../../hooks/useTranslations";
 
 interface DayEventsListProps {
   date: DateObject;
@@ -14,6 +15,7 @@ interface DayEventsListProps {
 const MAX_EVENTS_VISIBLE = 3;
 
 const DayEventsList = ({ calendar, date, events, locale }: DayEventsListProps) => {
+  const { t } = useTranslations();
   const sortedEvents = [...events].sort((a, b) => a.level - b.level);
 
   const eventsInView = sortedEvents.filter((segment) => segment.level < MAX_EVENTS_VISIBLE);
@@ -36,7 +38,7 @@ const DayEventsList = ({ calendar, date, events, locale }: DayEventsListProps) =
         {hasMoreLink && (
           <Modal.Open stopClickPropagation={true} opens={`more-events-${date}`}>
             <p className="absolute bottom-0 text-xs font-bold text-gray-600 hover:underline cursor-pointer">
-              +{sortedEvents.length - (MAX_EVENTS_VISIBLE - 1)} more
+              +{sortedEvents.length - (MAX_EVENTS_VISIBLE - 1)} {t("more")}
             </p>
           </Modal.Open>
         )}
@@ -46,7 +48,11 @@ const DayEventsList = ({ calendar, date, events, locale }: DayEventsListProps) =
           <Modal>
             <div className="p-4">
               <h3 className="font-bold mb-4">
-                رویدادهای روز {new DateObject({ date, calendar, locale }).format("DD MMMM YYYY")}
+                <span>
+                  {new DateObject({ date, calendar, locale }).format(
+                    `${t("events")} ${t("day")} DD MMMM YYYY`
+                  )}
+                </span>
               </h3>
               <ul className="space-y-2">
                 {sortedEvents.map((ev) => {

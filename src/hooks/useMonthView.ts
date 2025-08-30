@@ -1,19 +1,16 @@
-import { useCalendarStore } from "../store/calendarStore";
-import { useEventStore } from "../store/eventStore";
-import { useGenerateCalendarCells } from "./useCalendarCells";
-import { daysOfWeekEn, daysOfWeekFa } from "../constants";
 import { useMemo } from "react";
-import type { CalendarEvent } from "../types/globalTypes";
 import DateObject from "react-date-object";
+import { useEventStore } from "../store/eventStore";
+import type { CalendarEvent } from "../types/globalTypes";
 import { processEventsForLayout } from "../utils/eventLayout";
+import { useGenerateCalendarCells } from "./useCalendarCells";
 import { useGetCalendar } from "./useGetCalendar";
+import { weekDays } from "../constants";
 
 export const useMonthView = () => {
   const eventStore = useEventStore();
-  const { calendarType } = useCalendarStore();
   const { calendar, locale } = useGetCalendar();
   const generatedDate = useGenerateCalendarCells();
-  const daysOfWeek = calendarType === "persian" ? daysOfWeekFa : daysOfWeekEn;
 
   const rows = useMemo(
     () => Array.from({ length: 6 }, (_, rowIndex) => generatedDate.slice(rowIndex * 7, rowIndex * 7 + 7)),
@@ -59,7 +56,7 @@ export const useMonthView = () => {
     locale,
     calendar,
     addEvent,
-    daysOfWeek,
+    weekDays,
     eventLayout,
     handleEventDrop,
   };

@@ -1,17 +1,14 @@
 import clsx from "clsx";
 import { useState } from "react";
-import gregorian from "react-date-object/calendars/gregorian";
-import persian from "react-date-object/calendars/persian";
-import gregorian_en from "react-date-object/locales/gregorian_en";
-import persian_fa from "react-date-object/locales/persian_fa";
-import DatePicker, { DateObject } from "react-multi-date-picker";
-import AnalogTimePicker from "react-multi-date-picker/plugins/analog_time_picker";
 import { v4 as uuidv4 } from "uuid";
 import TrashIcon from "../icons/Trash";
-import { useCalendarStore } from "../store/calendarStore";
-import type { CalendarEvent } from "../types/globalTypes";
 import IconWrapper from "./IconWrapper";
+import { useGetCalendar } from "../hooks/useGetCalendar";
+import type { CalendarEvent } from "../types/globalTypes";
 import { getDayBoundary } from "../helpers/getDayBoundary";
+import DatePicker, { DateObject } from "react-multi-date-picker";
+import AnalogTimePicker from "react-multi-date-picker/plugins/analog_time_picker";
+import { useTranslations } from "../hooks/useTranslations";
 
 interface Props {
   toDate?: DateObject;
@@ -32,15 +29,12 @@ export default function AddEventForm({
   onCloseModal,
   initialEvent,
 }: Props) {
-  const { calendarType } = useCalendarStore();
-  const calendar = calendarType === "persian" ? persian : gregorian;
-  const locale = calendarType === "persian" ? persian_fa : gregorian_en;
-
+  const { t } = useTranslations();
+  const { calendar, locale } = useGetCalendar();
   const [title, setTitle] = useState(initialEvent?.title || "");
   const [color, setColor] = useState(initialEvent?.color || "#6366f1");
   const [allDayChecked, setAllDayChecked] = useState(initialEvent?.allDay || false);
   const [description, setDescription] = useState(initialEvent?.description || "");
-
 
   const [fromDateTime, setFromDateTime] = useState<DateObject | null>(
     initialEvent ? new DateObject({ date: initialEvent.start, calendar, locale }) : fromDate || null
@@ -88,21 +82,29 @@ export default function AddEventForm({
 
   return (
     <div onClick={(e) => e.stopPropagation()} className="p-4 space-y-4">
+      <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+        {t("eventTitle")}
+      </label>
       <input
-        className="w-full border rounded px-3 py-2"
-        placeholder="عنوان رویداد"
+        id="title"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
-      />
-      <textarea
         className="w-full border rounded px-3 py-2"
-        placeholder="توضیحات"
+        placeholder={`${t("eventTitle")}`}
+      />
+      <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+        {t("description")}
+      </label>
+      <textarea
+        id="description"
+        className="w-full border rounded px-3 py-2"
+        placeholder={t("description")}
         value={description}
         onChange={(e) => setDescription(e.target.value)}
       />
       <div className="flex gap-4">
         <div className="flex-1">
-          <label className="block text-sm font-medium text-gray-700 mb-1">From</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">{t("from")}</label>
           <DatePicker
             locale={locale}
             calendar={calendar}
@@ -116,7 +118,7 @@ export default function AddEventForm({
           />
         </div>
         <div className="flex-1">
-          <label className="block text-sm font-medium text-gray-700 mb-1">To</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">{t("to")}</label>
           <DatePicker
             locale={locale}
             value={toDateTime}
@@ -136,7 +138,7 @@ export default function AddEventForm({
           <span className="slider"></span>
         </label>
         <label htmlFor="allDaySwitch" className="ml-2">
-          All Day
+          {t("allDay")}
         </label>
       </div>
 
@@ -169,13 +171,13 @@ export default function AddEventForm({
             onClick={onCloseModal}
             className="ml-auto px-4 mx-1 py-2 bg-blue-600/80 hover:bg-blue-900/90 text-white rounded"
           >
-            Cancel
+            {t("cancel")}
           </button>
           <button
             onClick={handleSubmit}
             className="ml-auto px-4 py-2 bg-blue-600/80 hover:bg-blue-900/90 text-white rounded"
           >
-            {onDelete ? "UPDATE" : "ADD"}
+            {onDelete ? t("update") : t("add")}
           </button>
         </div>
       </div>
