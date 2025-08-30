@@ -23,14 +23,18 @@ function getItemStyles(
     return { display: "none" };
   }
 
-  // محاسبه میزان جابجایی ماوس از نقطه شروع
   const deltaX = currentPointerOffset.x - initialPointerOffset.x;
   const deltaY = currentPointerOffset.y - initialPointerOffset.y;
 
-  // موقعیت نهایی = موقعیت اولیه آیتم + میزان جابجایی ماوس
   const x = initialSourceOffset.x + deltaX;
   const y = initialSourceOffset.y + deltaY;
-  const transform = `translate(${x}px, ${y}px)`;
+
+  let transform = `translate(${x}px, ${y}px)`;
+
+  const isRtl = document.documentElement.dir === "rtl";
+  if (isRtl) {
+    transform += "translateX(-90%)";
+  }
 
   return { transform };
 }

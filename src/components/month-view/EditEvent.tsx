@@ -98,10 +98,10 @@ const EditEvent = ({
       }}
       className={clsx(
         "absolute left-0 right-0 overflow-hidden cursor-pointer text-ellipsis whitespace-nowrap px-1 text-sm text-white hover:cursor-grab active:cursor-grabbing",
-        isStart && "rounded-l-md",
-        isEnd && "rounded-r-md",
-        !isStart && "ms-[-8px]",
-        !isEnd && "me-[-1px]"
+        isStart && "ltr:rounded-l-md rtl:rounded-r-md",
+        isEnd && "ltr:rounded-r-md rtl:rounded-l-md",
+        !isStart && "ltr:ml-[-8px] rtl:mr-[-8px]",
+        !isEnd && "ltr:mr-[-1px] rtl:ml-[-1px]"
       )}
     >
       {isStart && <span className="font-bold">{event.title}</span>}

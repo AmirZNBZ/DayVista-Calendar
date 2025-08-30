@@ -13,8 +13,8 @@ import { useGetDate } from "../hooks/useGetDate";
 const Header = () => {
   const getDate = useGetDate();
   const goToToday = useCalendarStore((state) => state.goToToday);
-  const goToNextMonth = useCalendarStore((state) => state.goToNext);
-  const goToPrevMonth = useCalendarStore((state) => state.goToPrev);
+  const goToNext = useCalendarStore((state) => state.goToNext);
+  const goToPrev = useCalendarStore((state) => state.goToPrev);
   const setViewType = useCalendarStore((state) => state.setViewType);
   const calendarType = useCalendarStore((state) => state.calendarType);
   const [showViewOptions, setShowViewOptions] = useState<boolean>(false);
@@ -86,8 +86,8 @@ const Header = () => {
       <section id="movementButtons" className="relative max-w-4/12">
         <div className="flex items-center">
           <IconWrapper
-            onClickFn={goToPrevMonth}
-            className="hover:bg-gray-300/30 rounded-full p-2 transform -rotate-180 pointer select-none"
+            onClickFn={goToPrev}
+            className="hover:bg-gray-300/30 rounded-full p-2 transform -rotate-180 rtl:rotate-0 pointer select-none"
           >
             <ThinArrowRightIcon strokeWidth={2} />
           </IconWrapper>
@@ -97,8 +97,8 @@ const Header = () => {
             </span>
           </p>
           <IconWrapper
-            onClickFn={goToNextMonth}
-            className="hover:bg-gray-300/30 rounded-full p-2 transform pointer select-none"
+            onClickFn={goToNext}
+            className="hover:bg-gray-300/30 rounded-full p-2 transform pointer select-none rtl:-rotate-180"
           >
             <ThinArrowRightIcon strokeWidth={2} />
           </IconWrapper>
