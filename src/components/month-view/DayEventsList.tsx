@@ -25,13 +25,13 @@ const DayEventsList = ({ calendar, date, events, locale }: DayEventsListProps) =
 
   return (
     <>
-      <div onClick={(e) => e.stopPropagation()} className="mt-1 space-y-1 text-xs text-left">
+      <div onClick={(e) => e.stopPropagation()} className="mt-1 space-y-1 text-xs text-start">
         {(hasMoreLink ? visibleEvents : eventsInView).map((segment) => (
           <EditEvent
-            key={`${segment.id}-${date}`}
             event={segment}
-            isStart={segment.isStart}
             isEnd={segment.isEnd}
+            isStart={segment.isStart}
+            key={`${segment.id}-${date}`}
             topPosition={segment.level * 24}
           />
         ))}

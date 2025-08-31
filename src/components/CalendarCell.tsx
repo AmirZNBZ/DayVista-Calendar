@@ -59,14 +59,14 @@ const CalendarCell = ({ cellData, events, onEventDrop, onAddEvent, calendar, loc
         data-no-outside-click
         ref={dropRef as unknown as React.Ref<HTMLTableCellElement>}
         className={clsx(
-          "active:bg-purple-200/20 select-none min-h-28 h-28 p-1 align-top border border-orange-400",
+          "active:bg-purple-200/20 select-none min-h-28 h-28 p-1 align-top",
           isOver && "bg-green-100/70",
           shouldHighlight && "bg-green-100/70"
         )}
       >
         <Modal.Open opens={key.toString()} key={key}>
           <div className="relative h-full pointer">
-            <div className="text-right">
+            <div className="text-start">
               {dayNumber && (
                 <strong className={clsx(!isCurrentMonth ? "text-gray-300" : "")}>{dayNumber}</strong>
               )}
