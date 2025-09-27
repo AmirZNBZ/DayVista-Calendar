@@ -72,14 +72,9 @@ const EditEvent = ({
       data-no-outside-click
       style={listStyle}
       className={clsx(
-        "relative cursor-pointer p-2 text-sm text-white ",
-        isMultiDay ? "rounded-l-md" : "rounded-md",
-        isMultiDay && [
-          "after:content-[''] after:absolute after:top-0 after:right-[-12px] after:w-0 after:h-0",
-          "after:border-t-[18px] after:border-t-transparent",
-          "after:border-b-[18px] after:border-b-transparent",
-          "after:border-l-[12px] after:border-l-[var(--event-color)]",
-        ]
+        "relative cursor-pointer p-2 text-sm text-white",
+        isMultiDay ? "ltr:rounded-l-md rtl:rounded-r-md" : "rounded-md",
+        isMultiDay && ["multiDayArrowLeft", "multiDayArrowRight"]
       )}
     >
       <span className="font-bold">{event.title}</span>
