@@ -4,6 +4,18 @@
   .pointer {
     @apply cursor-pointer;
   }
+  .multiDayArrowLeft {
+    @apply ltr:after:content-[''] ltr:after:absolute ltr:after:top-0 ltr:after:right-[-12px] ltr:after:w-0 ltr:after:h-0
+          ltr:after:border-t-[18px] ltr:after:border-t-transparent
+          ltr:after:border-b-[18px] ltr:after:border-b-transparent
+          ltr:after:border-l-[12px] ltr:after:border-l-[var(--event-color)];
+  }
+  .multiDayArrowRight {
+    @apply rtl:before:content-[''] rtl:before:absolute rtl:before:top-0 rtl:before:left-[-12px] rtl:before:w-0 rtl:before:h-0
+          rtl:before:border-t-[18px] rtl:before:border-t-transparent
+          rtl:before:border-b-[18px] rtl:before:border-b-transparent
+          rtl:before:border-r-[12px] rtl:before:border-r-[var(--event-color)];
+  }
 }
 
 table,

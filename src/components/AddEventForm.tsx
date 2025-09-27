@@ -132,13 +132,13 @@ export default function AddEventForm({
           />
         </div>
       </div>
-      <div className="flex items-center">
+      <div className="flex gap-4 items-center">
+        <label htmlFor="allDaySwitch" className="text-md font-semibold">
+          {t("allDay")}
+        </label>
         <label className="switch">
           <input type="checkbox" id="allDaySwitch" checked={allDayChecked} onChange={handleCheckAllDay} />
           <span className="slider"></span>
-        </label>
-        <label htmlFor="allDaySwitch" className="ml-2">
-          {t("allDay")}
         </label>
       </div>
 
@@ -166,7 +166,7 @@ export default function AddEventForm({
             <TrashIcon fill="red" />
           </IconWrapper>
         )}
-        <div className="self-end">
+        <div className="flex gap-4 self-end">
           <button
             onClick={onCloseModal}
             className="ml-auto px-4 mx-1 py-2 bg-blue-600/80 hover:bg-blue-900/90 text-white rounded"
