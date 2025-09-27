@@ -2,6 +2,7 @@ import DateObject from "react-date-object";
 import { useEventStore } from "../../store/eventStore";
 import type { CalendarEvent } from "../../types/globalTypes";
 import AddEventForm from "../AddEventForm";
+import clsx from "clsx";
 import Modal from "../modal/Modal";
 import { useDrag } from "react-dnd";
 import { useEffect } from "react";
@@ -18,7 +19,9 @@ interface WeekEventProps {
 
 const WeekEvent = ({ event }: WeekEventProps) => {
   const eventStore = useEventStore();
-  const setDraggedEventInfo = useEventStore((state) => state.setDraggedEventInfo);
+  const setDraggedEventInfo = useEventStore(
+    (state) => state.setDraggedEventInfo
+  );
   const setDropTargetDate = useEventStore((state) => state.setDropTargetDate);
 
   const [{ isDragging }, dragEventRef, preview] = useDrag({
@@ -44,12 +47,47 @@ const WeekEvent = ({ event }: WeekEventProps) => {
     preview(getEmptyImage(), { captureDraggingState: true });
   }, [preview]);
 
+  // Resize handles (top & bottom)
+  const [{ isResizingTop }, dragTop, previewTop] = useDrag({
+    type: "resize-event",
+    item: () => ({
+      id: event.id,
+      edge: "start",
+      title: event.title,
+      color: event.color,
+    }),
+    collect: (monitor) => ({ isResizingTop: !!monitor.isDragging() }),
+    end: () => {
+      setDraggedEventInfo(null);
+      setDropTargetDate(null);
+    },
+  });
+  const [{ isResizingBottom }, dragBottom, previewBottom] = useDrag({
+    type: "resize-event",
+    item: () => ({
+      id: event.id,
+      edge: "end",
+      title: event.title,
+      color: event.color,
+    }),
+    collect: (monitor) => ({ isResizingBottom: !!monitor.isDragging() }),
+    end: () => {
+      setDraggedEventInfo(null);
+      setDropTargetDate(null);
+    },
+  });
+
+  useEffect(() => {
+    // hide default preview for resize handles
+    previewTop(getEmptyImage(), { captureDraggingState: true });
+    previewBottom(getEmptyImage(), { captureDraggingState: true });
+  }, [previewTop, previewBottom]);
+  const resizing = isResizingTop || isResizingBottom;
   const eventStyle = {
     top: `${event.top}px`,
     height: `${event.height}px`,
     left: event.left,
     width: event.width,
-    opacity: isDragging ? 0.5 : 1,
   };
 
   const updateEvent = (event: CalendarEvent) => {
@@ -64,9 +102,28 @@ const WeekEvent = ({ event }: WeekEventProps) => {
     <>
       <Modal.Open opens={event.id} stopClickPropagation={true}>
         <div
-          style={{ ...eventStyle, backgroundColor: `${event.color}20`, borderColor: event.color, zIndex: 10 }}
+          style={{
+            ...eventStyle,
+            backgroundColor: `${event.color}20`,
+            borderColor: event.color,
+            zIndex: 10,
+          }}
           className="absolute p-1.5 overflow-hidden rounded-md text-sm border-l-2 cursor-grab active:cursor-grabbing"
         >
+          {/* 🔹 Resize handle - top */}
+          <div
+            ref={dragTop as unknown as React.Ref<HTMLDivElement>}
+            onMouseDown={(e) => e.stopPropagation()}
+            className="absolute inset-x-0 -top-1 h-2 cursor-ns-resize z-20"
+          />
+
+          {/* 🔹 Resize handle - bottom */}
+          <div
+            ref={dragBottom as unknown as React.Ref<HTMLDivElement>}
+            onMouseDown={(e) => e.stopPropagation()}
+            className="absolute inset-x-0 -bottom-1 h-2 cursor-ns-resize z-20"
+          />
+
           <p
             className="font-semibold cursor-move w-fit"
             style={{ color: event.color }}
@@ -75,7 +132,8 @@ const WeekEvent = ({ event }: WeekEventProps) => {
             {event.title}
           </p>
           <p className="text-xs text-gray-600 mt-3">
-            {new DateObject(event.start).format("hh:mm A")} - {new DateObject(event.end).format("hh:mm A")}
+            {new DateObject(event.start).format("hh:mm A")} -
+            {new DateObject(event.end).format("hh:mm A")}
           </p>
         </div>
       </Modal.Open>
