@@ -2,7 +2,6 @@ import DateObject from "react-date-object";
 import { useEventStore } from "../../store/eventStore";
 import type { CalendarEvent } from "../../types/globalTypes";
 import AddEventForm from "../AddEventForm";
-import clsx from "clsx";
 import Modal from "../modal/Modal";
 import { useDrag } from "react-dnd";
 import { useEffect } from "react";
@@ -24,7 +23,7 @@ const WeekEvent = ({ event }: WeekEventProps) => {
   );
   const setDropTargetDate = useEventStore((state) => state.setDropTargetDate);
 
-  const [{ isDragging }, dragEventRef, preview] = useDrag({
+  const [{}, dragEventRef, preview] = useDrag({
     type: "event",
     item: () => {
       const start = new DateObject(event.start);
@@ -48,7 +47,7 @@ const WeekEvent = ({ event }: WeekEventProps) => {
   }, [preview]);
 
   // Resize handles (top & bottom)
-  const [{ isResizingTop }, dragTop, previewTop] = useDrag({
+  const [{}, dragTop, previewTop] = useDrag({
     type: "resize-event",
     item: () => ({
       id: event.id,
@@ -62,7 +61,7 @@ const WeekEvent = ({ event }: WeekEventProps) => {
       setDropTargetDate(null);
     },
   });
-  const [{ isResizingBottom }, dragBottom, previewBottom] = useDrag({
+  const [{}, dragBottom, previewBottom] = useDrag({
     type: "resize-event",
     item: () => ({
       id: event.id,
@@ -82,7 +81,7 @@ const WeekEvent = ({ event }: WeekEventProps) => {
     previewTop(getEmptyImage(), { captureDraggingState: true });
     previewBottom(getEmptyImage(), { captureDraggingState: true });
   }, [previewTop, previewBottom]);
-  const resizing = isResizingTop || isResizingBottom;
+  // const resizing = isResizingTop || isResizingBottom;
   const eventStyle = {
     top: `${event.top}px`,
     height: `${event.height}px`,

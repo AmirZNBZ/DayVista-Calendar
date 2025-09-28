@@ -94,11 +94,7 @@ const DayColumn = ({
     rounded: number;
   } | null>(null);
 
-  const [{ isResizing }, dropRef] = useDrop<
-    ResizeItem,
-    void,
-    { isResizing: boolean }
-  >(
+  const [{}, dropRef] = useDrop<ResizeItem, void, { isResizing: boolean }>(
     () => ({
       accept: "resize-event",
       collect: (monitor) => ({

@@ -19,7 +19,14 @@ interface Props {
   onAdd: (event: CalendarEvent) => void;
 }
 
-const colors = ["#6366f1", "#22c55e", "#ef4444", "#f59e0b", "#a855f7", "#6b7280"];
+const colors = [
+  "#6366f1",
+  "#22c55e",
+  "#ef4444",
+  "#f59e0b",
+  "#a855f7",
+  "#6b7280",
+];
 
 export default function AddEventForm({
   onAdd,
@@ -33,14 +40,22 @@ export default function AddEventForm({
   const { calendar, locale } = useGetCalendar();
   const [title, setTitle] = useState(initialEvent?.title || "");
   const [color, setColor] = useState(initialEvent?.color || "#6366f1");
-  const [allDayChecked, setAllDayChecked] = useState(initialEvent?.allDay || false);
-  const [description, setDescription] = useState(initialEvent?.description || "");
+  const [allDayChecked, setAllDayChecked] = useState(
+    initialEvent?.allDay || false
+  );
+  const [description, setDescription] = useState(
+    initialEvent?.description || ""
+  );
 
   const [fromDateTime, setFromDateTime] = useState<DateObject | null>(
-    initialEvent ? new DateObject({ date: initialEvent.start, calendar, locale }) : fromDate || null
+    initialEvent
+      ? new DateObject({ date: initialEvent.start, calendar, locale })
+      : fromDate || null
   );
   const [toDateTime, setToDateTime] = useState<DateObject | null>(
-    initialEvent ? new DateObject({ date: initialEvent.end, calendar, locale }) : toDate || null
+    initialEvent
+      ? new DateObject({ date: initialEvent.end, calendar, locale })
+      : toDate || null
   );
 
   const handleSubmit = () => {
@@ -53,8 +68,8 @@ export default function AddEventForm({
       allDay: allDayChecked,
       id: initialEvent?.id || uuidv4(),
       // ✨ ۳. تبدیل به رشته فقط در لحظه ذخیره نهایی انجام می‌شود.
-      start: fromDateTime.toDate().toISOString(),
-      end: toDateTime.toDate().toISOString(),
+      start: fromDateTime,
+      end: toDateTime,
     };
     onAdd(newEvent);
     onCloseModal?.();
@@ -82,7 +97,10 @@ export default function AddEventForm({
 
   return (
     <div onClick={(e) => e.stopPropagation()} className="p-4 space-y-4">
-      <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+      <label
+        htmlFor="title"
+        className="block text-sm font-medium text-gray-700 mb-1"
+      >
         {t("eventTitle")}
       </label>
       <input
@@ -92,7 +110,10 @@ export default function AddEventForm({
         className="w-full border rounded px-3 py-2"
         placeholder={`${t("eventTitle")}`}
       />
-      <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+      <label
+        htmlFor="description"
+        className="block text-sm font-medium text-gray-700 mb-1"
+      >
         {t("description")}
       </label>
       <textarea
@@ -104,7 +125,9 @@ export default function AddEventForm({
       />
       <div className="flex gap-4">
         <div className="flex-1">
-          <label className="block text-sm font-medium text-gray-700 mb-1">{t("from")}</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            {t("from")}
+          </label>
           <DatePicker
             locale={locale}
             calendar={calendar}
@@ -114,11 +137,16 @@ export default function AddEventForm({
             format="YYYY/MM/DD - HH:mm"
             calendarPosition="bottom-right"
             plugins={[<AnalogTimePicker hideSeconds />]}
-            inputClass={clsx(allDayChecked ? "bg-gray-400" : "", "w-full border rounded px-3 py-2")}
+            inputClass={clsx(
+              allDayChecked ? "bg-gray-400" : "",
+              "w-full border rounded px-3 py-2"
+            )}
           />
         </div>
         <div className="flex-1">
-          <label className="block text-sm font-medium text-gray-700 mb-1">{t("to")}</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            {t("to")}
+          </label>
           <DatePicker
             locale={locale}
             value={toDateTime}
@@ -128,7 +156,10 @@ export default function AddEventForm({
             format="YYYY/MM/DD - HH:mm"
             calendarPosition="bottom-right"
             plugins={[<AnalogTimePicker hideSeconds />]}
-            inputClass={clsx(allDayChecked ? "bg-gray-400" : "", "w-full border rounded px-3 py-2")}
+            inputClass={clsx(
+              allDayChecked ? "bg-gray-400" : "",
+              "w-full border rounded px-3 py-2"
+            )}
           />
         </div>
       </div>
@@ -137,7 +168,12 @@ export default function AddEventForm({
           {t("allDay")}
         </label>
         <label className="switch">
-          <input type="checkbox" id="allDaySwitch" checked={allDayChecked} onChange={handleCheckAllDay} />
+          <input
+            type="checkbox"
+            id="allDaySwitch"
+            checked={allDayChecked}
+            onChange={handleCheckAllDay}
+          />
           <span className="slider"></span>
         </label>
       </div>
