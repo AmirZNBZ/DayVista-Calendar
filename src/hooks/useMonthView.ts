@@ -39,8 +39,8 @@ export const useMonthView = () => {
 
     eventStore.updateEvent({
       ...eventToMove,
-      start: newStartDate.toDate().toISOString(),
-      end: newEndDate.toDate().toISOString(),
+      start: newStartDate,
+      end: newEndDate,
     });
   };
 

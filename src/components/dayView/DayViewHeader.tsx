@@ -8,7 +8,6 @@ import AllDayWeekEvent from "../weekView/AllDayWeekEvent";
 import { getDayBoundary } from "../../helpers/getDayBoundary";
 import Modal from "../modal/Modal";
 import AddEventForm from "../AddEventForm";
-import EditEvent from "../month-view/EditEvent";
 
 interface DayViewHeaderProps {
   day: DateObject;

@@ -14,8 +14,13 @@ interface AllDayCellProps {
 }
 
 const AllDayCell = ({ day, onEventDrop, onAddEvent }: AllDayCellProps) => {
-  const { dropTargetDate, setDropTargetDate, draggedEventInfo, setActiveDropZone, activeDropZone } =
-    useEventStore();
+  const {
+    dropTargetDate,
+    setDropTargetDate,
+    draggedEventInfo,
+    setActiveDropZone,
+    activeDropZone,
+  } = useEventStore();
 
   const [{ isOver }, dropRef] = useDrop({
     accept: "event",
@@ -40,10 +45,14 @@ const AllDayCell = ({ day, onEventDrop, onAddEvent }: AllDayCellProps) => {
     // اگر رویداد در حال کشیدن از نوع all-day است، بازه زمانی را هایلایت کن
     if (draggedEventInfo.allDay) {
       const durationInDays = Math.ceil(draggedEventInfo.duration / 86400);
-      const dropEndDate = new DateObject(dropTargetDay).add(durationInDays - 1, "days");
+      const dropEndDate = new DateObject(dropTargetDay).add(
+        durationInDays - 1,
+        "days"
+      );
 
       return (
-        currentCellDate.toUnix() >= dropTargetDay.toUnix() && currentCellDate.toUnix() <= dropEndDate.toUnix()
+        currentCellDate.toUnix() >= dropTargetDay.toUnix() &&
+        currentCellDate.toUnix() <= dropEndDate.toUnix()
       );
     } else {
       // اگر رویداد در حال کشیدن از نوع زمان‌دار است، فقط خود خانه هدف را هایلایت کن
@@ -66,8 +75,10 @@ const AllDayCell = ({ day, onEventDrop, onAddEvent }: AllDayCellProps) => {
         <AddEventForm
           onAdd={onAddEvent}
           initialEvent={{
+            id: "",
+            title: "",
             allDay: true,
-            start: day.format("YYYY/MM/DD - HH:mm"),
+            start: day,
             end: getDayBoundary(day, "end"),
           }}
         />

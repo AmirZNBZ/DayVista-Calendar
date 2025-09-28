@@ -11,11 +11,11 @@ export const processEventsForLayout = (
   visibleDays.forEach((day) => layoutMap.set(day.date.format("YYYY-MM-DD"), []));
 
   // رویدادها را بر اساس تاریخ شروع مرتب می‌کنیم
-  const sortedEvents = [...events].sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
+  const sortedEvents = [...events].sort((a, b) => new Date(a.start.toString()).getTime() - new Date(b.start.toString()).getTime());
 
   for (const event of sortedEvents) {
-    const startDate = new DateObject({ date: new Date(event.start), calendar, locale });
-    const endDate = new DateObject({ date: new Date(event.end), calendar, locale });
+    const startDate = new DateObject({ date: new Date(event.start.toString()), calendar, locale });
+    const endDate = new DateObject({ date: new Date(event.end.toString()), calendar, locale });
 
     // پیدا کردن یک جایگاه (level) خالی برای این رویداد
     let level = 0;
